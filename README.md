@@ -1,12 +1,12 @@
 # Instructions
 
 Following are the instructions on how to set up Riboformer and pre-process data. 
-The requirements of the hardware are ca.
+The hardware requirements are:
 
-- \>100GB of RAM       (mostly data pre-processing)
-- 500Gb of storage   (mostly dependent on RIBO data)
+- ~100-150GB of RAM       (mostly data pre-processing)
+- ~500Gb of storage   (mostly dependent on RIBO data)
 - 1 24Gb GPU
-- 4 CPU's
+- ~4 CPU's
 
 ## Setting up
 
@@ -24,7 +24,10 @@ riboformer                              root folder
 ```
 The process of setting up is mostly automated. Many of the following steps are accomponied by scripts. Download and unzip the folder containing scripts to a desired location, given access to the aforementioned hardware requirements.
 
-#%LINK#
+The folder and scripts can be downloaded using `git`:
+```
+git clone https://github.com/jdcla/riboformer_project.git
+```
 
 Note that scripts can take up to multiple hours, and require to be run from a terminal that will be active for that amount of time. `tmux` software can be used to detach from a terminal running a script without terminating it.
 
@@ -45,7 +48,7 @@ These packages need to be installed and accessible through your `PATH` variable:
 - [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 - [conda](https://docs.conda.io/en/latest/)
 
-**Note**: It is possible to install `fastqc`, `cutadapt` and `gffreads` through `conda`, and include it as part of a python environment.
+**Note**: It is possible to install `fastqc`, `cutadapt` and `gffreads` through `conda`/`pip`, and include it as part of a python environment.
 
 #### Python environment
 
@@ -65,8 +68,7 @@ conda activate riboformer_env
 
 `PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch`. GPU support is highly recommended.
 
-
-
+The following python packages are used:
 - gtfparse
 - pandas
 - tqdm
@@ -74,6 +76,11 @@ conda activate riboformer_env
 - pysam
 - transcript_transformer
 
+Install using pip (ensure you have activated the conda environment):
+
+```
+pip install gtfparse pandas tqdm polars pysam transcript_transformer
+```
 
 ## Data Preprocessing
 
@@ -173,3 +180,36 @@ bash 5_parse_ribo_reads.sh
 **Note**: This script will process all ribosome experiments listed within the `data/ribo/metadata.txt` file. When it is desired to process only part of the experiments, edit either the python script or `metadata.txt` file.
 
 ## Model Training
+
+The scripts used to train the model are located under `/scripts/train`. The [transcript_transformer](https://github.com/jdcla/transcript_transformer) python package handles training and use of the predictive models. 
+
+Riboformer can be used to map the full translatome of a ribosome profiling experiment. For this, multiple models are used that are trained on different folds of the data. The parts of the transcriptome excluded from the training and model selection process can be used for mapping (i.e. unbiased). In the following set-up, we use 5/6 of the data to train/select a model with which the remaining 1/6 of the transcriptome is used to map the TIS on.
+
+The script `/scripts/train/train.sh` executes the training of six models trained on the various folds. Each model takes around ~12 hours to converge. It is possible to run the script as is, training all models in series over a total time of around 3 days. Alternatively, if multiple GPUs are available, it might be preferable to train the models in parallel.
+
+When `transcript_transformer` is called, it requires a dictionary file as input that lays out the input file structure of the `hdf5` file and the data used to train the model. This file is located under `scripts/train/template.json`. **Note that it is important to change the name of the ribosome data path according to the experiment name used before.**
+
+
+`template.json`:
+```
+{
+  "h5_path":"../data/GRCh38_v107.h5",
+  "exp_path":"transcript",
+  "y_path":"tis",
+  "chrom_path":"contig",
+  "id_path":"id",
+  "seq":false,                                  # No sequence data is used as input
+  "ribo":{
+    experiment_1/5: {}                          <-- Make sure to change this
+      }
+}
+```
+
+To train the models in sequence, run:
+```
+bash train.sh
+```
+
+## Final mapping and top predictions
+
+Coming soon

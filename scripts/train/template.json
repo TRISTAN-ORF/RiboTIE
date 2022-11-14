@@ -1,0 +1,12 @@
+{
+    "h5_path":"../../data/GRCh38_v107.h5",
+    "exp_path":"transcript",
+    "y_path":"tis",
+    "contig_path":"contig",
+    "id_path":"id",
+    "seq":false,
+    "ribo": {
+        "riboseq/experiment_1/5": {
+        }
+    }
+}
