@@ -18,6 +18,8 @@ riboformer                              root folder
 │   ├── genome                          reference genome
 │   ├── ribo                            ribosome profiling
 ├── scripts                             execution scripts
+│   ├── setup                           setup scripts
+│   ├── train                           train scripts
 ├── models                              trained models
 ├── outputs                             model predictions
 
@@ -31,7 +33,7 @@ git clone https://github.com/jdcla/riboformer_project.git
 
 Note that scripts can take up to multiple hours, and require to be run from a terminal that will be active for that amount of time. `tmux` software can be used to detach from a terminal running a script without terminating it.
 
-**In order to successfully perform the computations listed within the script files, it is important to run the scripts from within the `scripts/setup/` folder.**
+**Note**: In order to successfully perform the computations listed within the script files, it is important to run the scripts from within the `scripts/setup/` folder.**
 
 ### Software requirements
 
@@ -124,7 +126,7 @@ riboformer                              root folder
 ...
 ```
 
-After adding all experiments and editing the metadata.txt file, run from within the `scripts/setup` folder:
+After adding all experiments and editing the `metadata.txt` file, run from within the `scripts/setup` folder:
 
 ```
 bash 3_map_ribo_reads.sh
