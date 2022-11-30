@@ -187,10 +187,11 @@ The scripts used to train the model are located under `/scripts/train`. The [tra
 
 Riboformer can be used to map the full translatome of a ribosome profiling experiment. For this, multiple models are used that are trained on different folds of the data. The parts of the transcriptome excluded from the training and model selection process can be used for mapping (i.e. unbiased). In the following set-up, we use 5/6 of the data to train/select a model with which the remaining 1/6 of the transcriptome is used to map the TIS on.
 
-The script `/scripts/train/train.sh` executes the training of six models trained on the various folds. Each model takes around ~12 hours to converge. It is possible to run the script as is, training all models in series over a total time of around 3 days. Alternatively, if multiple GPUs are available, it might be preferable to train the models in parallel.
+The script `/scripts/train/train.sh` executes the training of six models trained on the various folds. Each model takes around ~12 hours to converge. It is possible to run the script as is, training all models in series over a total time of around 3 days. Alternatively, if multiple GPUs are available, it might be preferable to break the script up and train the models in parallel.
 
 When `transcript_transformer` is called, it requires a dictionary file as input that lays out the input file structure of the `hdf5` file and the data used to train the model. This file is located under `scripts/train/template.json`. **Note that it is important to change the name of the ribosome data path according to the experiment name used before.**
 
+**Note:** It is recommended to duplicate and alter `template.json` in line with the ribosome experiments applied. Additionally, it is recommended to alter the names of the trained models (defined under `--name` in `train.sh`) in accordance with the ribosome data sets applied.
 
 `template.json`:
 ```

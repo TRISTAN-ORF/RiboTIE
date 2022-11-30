@@ -62,7 +62,7 @@ def main(f_path):
             riboseq_data[mask_tr] = sparse.csr_matrix(tr_reads)
         
         print('Saving data...')
-        h5max.store_sparse_matrices(experiment_f, riboseq_data, format='csr')
+        h5max.store_sparse(experiment_f, riboseq_data, format='csr')
         num_reads = [s.sum() for s in riboseq_data]
         experiment_f.create_dataset('num_reads', data=np.array(num_reads).astype(int))
     f.close()
