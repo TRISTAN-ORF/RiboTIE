@@ -43,14 +43,13 @@ Several software packages need to be installed for the scripts to succeed.
 
 These packages need to be installed and accessible through your `PATH` variable:
 
-- [gffreads](https://github.com/gpertea/gffread)
 - [samtools](https://www.htslib.org/)
 - [STAR](https://github.com/alexdobin/STAR)
 - [cutadapt](https://cutadapt.readthedocs.io/en/stable/)
 - [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 - [conda](https://docs.conda.io/en/latest/)
 
-**Note**: It is possible to install `fastqc`, `cutadapt` and `gffreads` through `conda`/`pip`, and include it as part of a python environment.
+**Note**: It is possible to install `fastqc`, `cutadapt` through `conda`/`pip`, and include it as part of a python environment.
 
 #### Python environment
 
