@@ -5,61 +5,38 @@ import numpy as np
 from tqdm import tqdm
 
 import h5py
-import pysam
+import pyfaidx
 from gtfparse import read_gtf
 
 def co_to_idx(start, end, strand):
         return start-1, end
 
-def slice_gen(seq, start, end, strand, co=True, comp_dict = {0:1, 1:0, 2:3, 3:2, 4:4}):
+def slice_gen(seq, start, end, strand, co=True, to_vec=True, seq_dict={'A': 0, 'T': 1, 'C': 2, 'G': 3,'N':4}, 
+              comp_dict = {0:1, 1:0, 2:3, 3:2, 4:4}):
     if co: 
-        l, r = co_to_idx(start, end, strand) 
-    sl = seq[l:r]
+        start, end = co_to_idx(start, end, strand)
+        
+    sl = seq[start:end].seq
+    
+    if to_vec:
+        sl = list(map(lambda x: seq_dict[x], sl))
+        
     if strand in ['-', -1, False]:
         if comp_dict is not None:
-            sl = replace_np(sl, comp_dict)[::-1]
+            sl = list(map(lambda x: comp_dict[x], sl))[::-1]
         else:
             sl = sl[::-1]
     
-    return sl
+    return np.array(sl)
 
-def replace_np(inp, mapping):
-    k = np.array(list(mapping.keys()))
-    v = np.array(list(mapping.values()))
-    mapping_ar = np.zeros(k.max()+1,dtype=v.dtype) #k,v from approach #1
-    mapping_ar[k] = v
-
-    return mapping_ar[inp]
-
-def chartoint(nuc, seq_dict={'A': 0, 'T': 1, 'C': 2, 'G': 3,'N':4}):
-    return seq_dict[nuc]
-
-def main(argv):
-    print(argv)
-    genome_dir = argv[0] # /data/jimc_datasets/genomes/GRCh38/v107
-    genome_id = argv[1] # GRCh38_v107
-    os.makedirs(os.path.join(genome_dir, 'np'), exist_ok=True)
-    contig_list = pd.read_csv(os.path.join(genome_dir, 'chrom.sizes'), sep='\t', header=None, dtype={0:str})[0]
-    
-    print('Converting plain text genome strings to vector arrays...')
-    files = os.listdir(genome_dir)
-    for file in sorted(files):
-        if file[-3:] == '.fa':
-            fasta_file = os.path.join(genome_dir, file)
-            fasta_h = pysam.FastaFile(fasta_file)
-            for contig in fasta_h.references:
-                print(f'{contig}...')
-                seq = fasta_h.fetch(contig)
-                dna = list(tqdm(map(chartoint, seq), total=len(seq)))
-                np.save(os.path.join(genome_dir, 'np', contig), np.array(dna).reshape(-1,1))
-
-    ## Process transcripts
-    gtf_path = [file for file in files if file[-3:] == 'gtf' ][0]
-    gtf = read_gtf(os.path.join(genome_dir,gtf_path))
+def parse_transcriptome(gtf, fasta, chromsizes, h5_out, meta_dir):
+    genome = pyfaidx.Fasta(fasta)
+    contig_list = pd.read_csv(chromsizes, sep='\t', header=None, dtype={0:str})[0]
+    gtf = read_gtf(gtf)
 
     print('Extracting transcripts and metadata...')
-    os.makedirs(os.path.join(genome_dir, 'riboformer', 'numpy'), exist_ok=True)
-    os.makedirs(os.path.join(genome_dir, 'riboformer', 'metadata'), exist_ok=True)
+    os.makedirs(os.path.join(meta_dir, 'numpy'), exist_ok=True)
+    os.makedirs(os.path.join(meta_dir, 'metadata'), exist_ok=True)
     
     for contig in contig_list:
         print(f'{contig}...')
@@ -67,7 +44,6 @@ def main(argv):
         samples = []
         poi_contig = []
         gtf_set = gtf[gtf.seqname == str(contig)]
-        contig_fa = np.load(f'{genome_dir}/np/{contig}.npy')
         tr_set = gtf_set['transcript_id'].unique()[1:]
 
         tr_datas = []
@@ -95,7 +71,7 @@ def main(argv):
             tr_len = 0
 
             for j, exon in exons.iterrows():
-                exon_seq = slice_gen(contig_fa, exon.start, exon.end, exon.strand).astype(np.int16)
+                exon_seq = slice_gen(genome[contig], exon.start, exon.end, exon.strand, to_vec=True).astype(np.int16)
                 if exon.strand == '+':
                     exon_coords = [exon.start, exon.end]
                 else:
@@ -140,7 +116,7 @@ def main(argv):
 
 
             tr_datas.append(tr_data)
-            sample = np.concatenate((np.concatenate(exon_seqs), np.concatenate(target_seqs)), axis=1)
+            sample = np.vstack((np.concatenate(exon_seqs), np.concatenate(target_seqs)))
 
             samples.append(sample)
             tran_ids.append(tr_idx)
@@ -151,8 +127,8 @@ def main(argv):
             metadata = pd.DataFrame(columns=headers)
         else:
             metadata = pd.concat(tr_datas, axis=1).T
-        metadata.to_csv(os.path.join(genome_dir, 'riboformer', 'metadata', f'{contig}.csv'))
-        np.save(os.path.join(genome_dir, 'riboformer', 'numpy', f'{contig}.npy'), final)
+        metadata.to_csv(os.path.join(meta_dir, 'metadata', f'{contig}.csv'))
+        np.save(os.path.join(meta_dir, 'numpy', f'{contig}.npy'), final)
 
     print('Save data in hdf5 files...')
     
@@ -160,8 +136,8 @@ def main(argv):
     dt = h5py.vlen_dtype(np.dtype('int8'))
     contig_type = f'<S{contig_list.str.len().max()}'
 
-    f = h5py.File(f'{genome_id}.hdf5','w')
-    if f'{genome_id}' not in f.keys():
+    f = h5py.File(f'{h5_out}.h5','w')
+    if 'transcript' not in f.keys():
         grp = f.create_group('transcript')
     else:
         grp = f['transcript']
@@ -175,9 +151,9 @@ def main(argv):
     len_trs = []
     for contig in contig_list:
         print(f'{contig}...')
-        x = np.load(os.path.join(genome_dir, 'riboformer/numpy', f'{contig}.npy'), allow_pickle=True)
-        seqs += [t[:,0] for t in x[:,1]]
-        tiss += [t[:,1] for t in x[:,1]]
+        x = np.load(os.path.join(meta_dir, 'numpy', f'{contig}.npy'), allow_pickle=True)
+        seqs += [t[0] for t in x[:,1]]
+        tiss += [t[1] for t in x[:,1]]
         contigs.append(np.full(len(x), contig, dtype=contig_type))
         ids.append(x[:,0].astype('S15'))
 
@@ -192,10 +168,7 @@ def main(argv):
     f.close()
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("process_data [genome_dir] [genome ID]\n genome_dir: path"
-              " to directory containing all the chromosomes and a gtf file"
-              "\n genome ID: used as an identifier of the created h5py file")
+    if len(sys.argv) < 6 or len(sys.argv) > 6:
+        print("process_data [gtf] [fasta] [chrom.sizes], [h5_out] [meta_dir]")
     else:
-        main(sys.argv[1:])
-
+        parse_transcriptome(*sys.argv[1:])

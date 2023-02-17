@@ -1,5 +1,4 @@
-# If the file is too large to load in memory, simply split the sam file up and make a for loop
-
+# If the file is too large to load in memory, you can split the sam file up and adjust the script
 import sys
 import h5py
 import h5max
@@ -9,16 +8,14 @@ from scipy import sparse
 from tqdm import tqdm
 import polars as pl
 
-experiments = pd.read_csv('ribo/sralist.txt', header=None, sep='\t').values[:,0]
-chrom_sizes = pd.read_csv('genome/chrom.sizes', delimiter='\t', header=None, index_col=0)
-
-def main(f_path):
+def process_ribo_reads(h5, ribo_metadata):
     ## Store Ribosome signal by experiment/read_length
-    header = {2:'S15', 3:int, 9:'<S41'}
+    
+    experiments = pd.read_csv(ribo_metadata, header=None, sep='\t').values[:,0]
     header_dict = {2:'tr_ID', 3:'pos', 9:'read'}
     usecols = [2,3,9]
 
-    f = h5py.File(f_path, 'a')
+    f = h5py.File(h5, 'a')
     if 'riboseq' not in f['transcript'].keys():
         f['transcript'].create_group('riboseq')
 
@@ -34,7 +31,7 @@ def main(f_path):
             del f[f'transcript/riboseq/{experiment}']
         f['transcript/riboseq'].create_group(experiment)
         experiment_f = f[f'transcript/riboseq/{experiment}'].create_group('5')
-        df = pl.read_csv(f'../data/{experiment}/out/{experiment}_aligned_tran.sam', has_header=False, 
+        df = pl.read_csv(f'ribo/{experiment}/out/{experiment}_aligned_tran.sam', has_header=False, 
                         comment_char='@', columns=usecols, sep='\t')
         df.columns = list(header_dict.values())
 
@@ -54,8 +51,8 @@ def main(f_path):
         df = df.sort('tr_ID')
 
         print('Mapping reads...')
-        for group in tqdm(df.groupby('tr_ID'), total=len(df['tr_ID'].unique())):
-            mask_tr = tr_ids_f == group['tr_ID'][0].encode()
+        for tr_id, group in tqdm(df.groupby('tr_ID'), total=len(df['tr_ID'].unique())):
+            mask_tr = tr_ids_f == tr_id.encode()
             tr_reads = np.zeros((read_len_l, tr_lens_f[mask_tr][0]), dtype=np.uint32)
             for row in group.rows():
                 tr_reads[row[3]-20, row[1]-1] += 1
@@ -68,8 +65,9 @@ def main(f_path):
     f.close()
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 or len(sys.argv) < 1:
+    if len(sys.argv) > 3 or len(sys.argv) < 3:
         print("process_ribo_reads [h5_file] \n h5_file: path"
               " to hdf5 file containing transcriptome input data")
     else:
-        main(sys.argv[1])
+        print(sys.argv)
+        process_ribo_reads(*sys.argv[1:])
