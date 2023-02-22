@@ -36,7 +36,7 @@ def process_ribo_reads(h5, ribo_metadata):
         df.columns = list(header_dict.values())
 
         print('Filtering on read lens...')
-        df = df.with_column(
+        df = df.with_columns(
             pl.col("read").str.lengths().alias("read_len")
         )
         df = df.filter((pl.col('read_len') <= 40) & (pl.col('read_len') >= 20))

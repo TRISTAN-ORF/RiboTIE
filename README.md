@@ -53,7 +53,7 @@ These packages need to be installed and accessible through your `PATH` variable:
 
 #### Python environment
 
-The application of predictive tools and part of the data processing is performed through python. As with any python project, it is recommended to create a custom environment using `conda`. 
+The application of predictive tools and part of the data processing is performed through python. As with any python project, it is recommended to create a custom environment using `conda`. Package installation is often easier achieved using `pip`, as conda often finds conflicts between packages that are typically not problematic.
 
 To create a new environment, run:
 
@@ -71,17 +71,21 @@ conda activate riboformer_env
 
 The following python packages are used:
 - gtfparse
+- pyfaidx
 - pandas
 - tqdm
 - polars
-- pysam
 - transcript_transformer
+
+Before installing `transcript_transformer`, make sure that the correct pytorch with GPU support is installed first. Follow the instructions [here](https://pytorch.org/get-started/locally/).
 
 Install using pip (ensure you have activated the conda environment):
 
-```
+```bash
 pip install gtfparse pandas tqdm polars pysam transcript_transformer
 ```
+
+Make sure all the steps are run with the custom evironment activated.
 
 ## Data Preprocessing
 
@@ -168,14 +172,14 @@ In a first step, the `GRCh38_v107.h5` file is generated containing the transcrip
 Run from the `script/setup/` folder:
 
 ```
-bash 4_data_ref_genome.sh
+bash 4_process_transcriptome.sh
 ```
 
 
 The next step parses the mapped ribosome reads and incorporates them within the newly generated `GRCh38_v107.h5` file. Based on the size of the output `*.sam` file generated during the mapping step, this process can require >100Gb of RAM
 
 ```
-bash 5_parse_ribo_reads.sh
+bash 5_process_ribo.sh
 ```
 
 **Note**: This script will process all ribosome experiments listed within the `data/ribo/metadata.txt` file. When it is desired to process only part of the experiments, edit either the python script or `metadata.txt` file.
