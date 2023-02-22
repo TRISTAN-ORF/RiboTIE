@@ -3,26 +3,12 @@ cd ../../data/genome
 
 version="107"
 
-# download fa DNA files
-for i in {1..23};do
-	wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.$i.fa.gz;
-done
-wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.X.fa.gz
-wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.Y.fa.gz
-wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.nonchromosomal.fa.gz
-wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.MT.fa.gz
-
-gunzip *.gz
-
 # download primary assembly
-mkdir pa
-cd pa
 wget ftp://ftp.ensembl.org/pub/release-${version}/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 gunzip *.gz
 
 # create sizes.genome file
-cd ..
-faidx pa/*.fa -i chromsizes > chrom.sizes
+faidx Homo_sapiens.GRCh38.dna.primary_assembly.fa -i chromsizes > chrom.sizes
 
 # create fa transcriptome
 wget http://ftp.ensembl.org/pub/release-${version}/gtf/homo_sapiens/Homo_sapiens.GRCh38.${version}.gtf.gz

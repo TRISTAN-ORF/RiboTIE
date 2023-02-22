@@ -11,6 +11,7 @@ do
 	cd $dataset
 	mkdir out 
 	mkdir out/temp
+	mkdir out/genome
 	trimmed="out/temp/${dataset}_trimmed.fq"
 	cleaned="out/${dataset}_trimmed_noXRNAs.fastq"
 
@@ -26,10 +27,10 @@ do
 	STAR   --runThreadN 20   --genomeDir '../../genome/STAR'   --genomeLoad NoSharedMemory   --readFilesIn $cleaned --outFileNamePrefix out/ --outSAMtype BAM SortedByCoordinate --quantMode TranscriptomeSAM --outSAMattributes MD NH --outFilterMultimapNmax 10  --outMultimapperOrder Random --outFilterMismatchNmax 2   --seedSearchStartLmaxOverLread 0.5   --alignEndsType EndToEnd --outWigType bedGraph
 
 	# cleanup
-	mv out/Aligned.sortedByCoord.out.bam out/${dataset}_aligned.bam
+	mv out/Aligned.sortedByCoord.out.bam out/genome/${dataset}_aligned.bam
 	mv out/Aligned.toTranscriptome.out.bam out/${dataset}_aligned_tran.bam
-	fastqc -t 10 out/${dataset}_aligned.bam
-	samtools view -h -o out/${dataset}_aligned.sam out/${dataset}_aligned.bam
+	fastqc -t 10 out/genome/${dataset}_aligned.bam
+	samtools view -h -o out/genome/${dataset}_aligned.sam out/genome/${dataset}_aligned.bam
 	samtools view -h -o out/${dataset}_aligned_tran.sam out/${dataset}_aligned_tran.bam
 	cd ..
 done < "metadata.txt"
