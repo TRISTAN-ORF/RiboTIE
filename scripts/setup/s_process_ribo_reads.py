@@ -11,7 +11,7 @@ import polars as pl
 def process_ribo_reads(h5, ribo_metadata):
     ## Store Ribosome signal by experiment/read_length
     
-    experiments = pd.read_csv(ribo_metadata, header=None, sep='\t').values[:,0]
+    experiments = pd.read_csv(ribo_metadata, header=None, sep="\s+").values[:,0]
     header_dict = {2:'tr_ID', 3:'pos', 9:'read'}
     usecols = [2,3,9]
 

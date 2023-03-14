@@ -15,6 +15,9 @@ do
 	trimmed="out/temp/${dataset}_trimmed.fq"
 	cleaned="out/${dataset}_trimmed_noXRNAs.fastq"
 
+	# download files (from ncbi repo)
+	# fasterq-dump $dataset
+
 	# trim files and perform fastqc
 	cutadapt -j 20 -m 20 -a $adapter ${dataset}.fastq -o "out/temp/${dataset}_trimmed.fq" > "out/temp/${dataset}_trimmed_report.txt"
 
