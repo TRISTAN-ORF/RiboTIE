@@ -1,19 +1,19 @@
 # Instructions
 
-Following are the instructions on how to set up RIBO_former and pre-process data. 
+Following are the instructions on how to set up RIBO-former and pre-process data. 
 The hardware requirements are:
 
 - ~100-150GB of RAM       (mostly data pre-processing)
-- ~500Gb of storage   (mostly dependent on RIBO data)
+- ~500Gb of storage       (mostly dependent on RIBO data)
 - 1 24Gb GPU
 - ~4 CPU's
 
 ## Setting up
 
-For this project, a defined folder structure is used:
+For now, a defined folder structure is used:
 
 ```
-RIBO_former_scripts                     root folder
+RIBOformer_tool                         root folder
 ├── data                                input data
 │   ├── genome                          reference genome
 │   ├── ribo                            ribosome profiling
@@ -26,11 +26,11 @@ RIBO_former_scripts                     root folder
 ```
 The process of setting up is mostly automated. Many of the following steps are accomponied by scripts. Download and unzip the folder containing scripts to a desired location, given access to the aforementioned hardware requirements.
 
-The folder and scripts can be downloaded using `git`
+The folder and scripts can be downloaded using `git clone`
 
 Note that scripts can take up to multiple hours, and require to be run from a terminal that will be active for that amount of time. `tmux` software can be used to detach from a terminal running a script without terminating it.
 
-**Note**: In order to successfully perform the computations listed within the script files, it is important to run the scripts from within the `scripts/setup/` folder.**
+**Note**: In order to successfully perform the computations listed within the script files, it is important to run the scripts from within the `scripts/setup/` folder. Work is being done to integrate all steps into a single end-to-end pipeline**
 
 ### Software requirements
 
@@ -114,7 +114,7 @@ To map the ribosome profiling data to the transcriptome, the ribosomal data need
 An example folder layout:
 
 ```
-RIBO_former_scripts                     root folder
+RIBOformer_tool                         root folder
 ├── data                                input data
 │   ├── ribo                            ribosome profiling
 │   │   ├── experiment_1                experiment folder
