@@ -1,6 +1,6 @@
 # Instructions
 
-Following are the instructions on how to set up Riboformer and pre-process data. 
+Following are the instructions on how to set up RIBO_former and pre-process data. 
 The hardware requirements are:
 
 - ~100-150GB of RAM       (mostly data pre-processing)
@@ -13,7 +13,7 @@ The hardware requirements are:
 For this project, a defined folder structure is used:
 
 ```
-riboformer                              root folder
+RIBO_former_scripts                     root folder
 ├── data                                input data
 │   ├── genome                          reference genome
 │   ├── ribo                            ribosome profiling
@@ -26,10 +26,7 @@ riboformer                              root folder
 ```
 The process of setting up is mostly automated. Many of the following steps are accomponied by scripts. Download and unzip the folder containing scripts to a desired location, given access to the aforementioned hardware requirements.
 
-The folder and scripts can be downloaded using `git`:
-```
-git clone https://github.com/jdcla/riboformer_project.git
-```
+The folder and scripts can be downloaded using `git`
 
 Note that scripts can take up to multiple hours, and require to be run from a terminal that will be active for that amount of time. `tmux` software can be used to detach from a terminal running a script without terminating it.
 
@@ -117,7 +114,7 @@ To map the ribosome profiling data to the transcriptome, the ribosomal data need
 An example folder layout:
 
 ```
-riboformer                              root folder
+RIBO_former_scripts                     root folder
 ├── data                                input data
 │   ├── ribo                            ribosome profiling
 │   │   ├── experiment_1                experiment folder
@@ -188,7 +185,7 @@ bash 5_process_ribo.sh
 
 The scripts used to train the model are located under `/scripts/train`. The [transcript_transformer](https://github.com/jdcla/transcript_transformer) python package handles training and use of the predictive models. 
 
-Riboformer can be used to map the full translatome of a ribosome profiling experiment. For this, multiple models are used that are trained on different folds of the data. The parts of the transcriptome excluded from the training and model selection process can be used for mapping (i.e. unbiased). In the following set-up, we use 5/6 of the data to train/select a model with which the remaining 1/6 of the transcriptome is used to map the TIS on.
+RIBO-former can be used to map the full translatome of a ribosome profiling experiment. For this, multiple models are used that are trained on different folds of the data. The parts of the transcriptome excluded from the training and model selection process can be used for mapping (i.e. unbiased). In the following set-up, we use 5/6 of the data to train/select a model with which the remaining 1/6 of the transcriptome is used to map the TIS on.
 
 The script `/scripts/train/train.sh` executes the training of six models trained on the various folds. Each model takes around ~12 hours to converge. It is possible to run the script as is, training all models in series over a total time of around 3 days. Alternatively, if multiple GPUs are available, it might be preferable to break the script up and train the models in parallel.
 
@@ -216,6 +213,15 @@ To train the models in sequence, run:
 bash train.sh
 ```
 
-## Final mapping and top predictions
+## ✔️ TODO list
 
-Coming soon
+- [x] Process transcriptome features
+- [x] Process ribosome profiling data
+- [x] Set-up data format for model training/prediction
+- [ ] Post-processing features
+- [ ] Model output aggregation and processing 
+- [ ] Wrap it all together: 
+    - [ ] Single pip package
+    - [ ] Simplified/intuitive utility
+    - [ ] End-to-end pipeline
+- [ ] Optional: support for GUI (streamlit)
