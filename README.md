@@ -1,4 +1,21 @@
-# Instructions
+<div align="center">
+<h1>🧮 RIBO-former (tool)</h1>
+
+Supporting repository named after the equally named study
+
+</div>
+
+## 📋 About
+RIBO-former is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RIBO-former.
+The data, saved model parameters and outputs used to perform the study and benchmarks as discussed in [the paper]() can are found [here](https://github.com/jdcla/RIBO_former_paper).
+
+To apply the models on custom data or train new models following our approach, we refer to the [RIBO-former tool](https://github.com/jdcla/RIBO_former) GitHub repository.
+
+
+
+The repository of TIS Transformer, a similar publication for the delineation of novel coding sequences, where the model relies on transcript sequence data, can be found [here](https://github.com/jdcla/TIS_transformer)
+
+## 📖 User guide
 
 Following are the instructions on how to set up RIBO-former and pre-process data. 
 The hardware requirements are:
@@ -7,8 +24,6 @@ The hardware requirements are:
 - ~500Gb of storage       (mostly dependent on RIBO data)
 - 1 24Gb GPU
 - ~4 CPU's
-
-## Setting up
 
 For now, a defined folder structure is used:
 
@@ -34,9 +49,8 @@ Note that scripts can take up to multiple hours, and require to be run from a te
 
 ### Software requirements
 
-Several software packages need to be installed for the scripts to succeed. 
-
 #### System
+Several software packages need to be installed for the scripts to succeed. 
 
 These packages need to be installed and accessible through your `PATH` variable:
 
@@ -84,12 +98,12 @@ pip install gtfparse pandas tqdm polars pysam transcript_transformer
 
 Make sure all the steps are run with the custom evironment activated.
 
-## Data Preprocessing
+### Data Preprocessing
 
 Data preprocessing includes setting up a reference genome and mapping ribosome profiling reads. 
 After
 
-### Setting up the reference genome
+#### Setting up the reference genome
 
 Start with setting up the reference genome. Running the script `scripts/setup/1_get_ref_genome.sh` will download and map the relevant genome into the `data/genome/` folder. Note that the version number of the human genome is a variable at the start of the script and can be altered in the future.
 Within the script folder, run:
@@ -104,7 +118,7 @@ The next step is to create indexes for our mapping software `STAR`. Run:
 bash 2_STAR_ref_genome.sh
 ```
 
-### Mapping ribosome profiling data
+#### Mapping ribosome profiling data
 
 To map the ribosome profiling data to the transcriptome, the ribosomal data need first be processed and mapped. Different ribosome experiments exist within the `data/ribo/` subfolder. For each experiment, create and name a folder after the experiment. Within the folder, place the `.fastq` ribosome file following the same name convention.
 
@@ -181,7 +195,7 @@ bash 5_process_ribo.sh
 
 **Note**: This script will process all ribosome experiments listed within the `data/ribo/metadata.txt` file. When it is desired to process only part of the experiments, edit either the python script or `metadata.txt` file.
 
-## Model Training
+### Model Training
 
 The scripts used to train the model are located under `/scripts/train`. The [transcript_transformer](https://github.com/jdcla/transcript_transformer) python package handles training and use of the predictive models. 
 
@@ -213,7 +227,7 @@ To train the models in sequence, run:
 bash train.sh
 ```
 
-## ✔️ TODO list
+## ✔️ Roadmap
 
 - [x] Process transcriptome features
 - [x] Process ribosome profiling data
