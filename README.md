@@ -1,7 +1,7 @@
 <div align="center">
-<h1>🧮 RIBO-former (tool)</h1>
+<h1>🧮 RIBO-former</h1>
 
-Supporting repository named after the equally named study
+Driving coding sequence discovery since 2023
 
 </div>
 
@@ -10,7 +10,7 @@ RIBO-former is created to annotate translation initiation sites on transcripts u
 
 The data, saved model parameters and outputs used to perform the study and benchmarks as discussed in [the paper]() can are found [here](https://github.com/jdcla/RIBO_former_paper).
 
-When interested in more advanced features, suchas using a custom transformer architecture, we refer the user manual of the [transcript-transformer](https://github.com/jdcla/transcript_transformer), a supporting PyPi package created alongside this tool. 
+When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer](https://github.com/jdcla/transcript_transformer), a supporting PyPi package created alongside this tool. 
 
 The repository of TIS Transformer, a similar publication for the delineation of novel coding sequences, where the model relies on transcript sequence data, can be found [here](https://github.com/jdcla/TIS_transformer)
 
