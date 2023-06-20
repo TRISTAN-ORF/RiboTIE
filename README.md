@@ -1,7 +1,13 @@
 <div align="center">
 <h1>🧮 RIBO-former</h1>
 
-Driving coding sequence discovery since 2023
+*Driving coding sequence discovery since 2023*
+
+[![GitHub license](https://img.shields.io/github/license/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/blob/main/LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/issues)
+[![GitHub stars](https://img.shields.io/github/stars/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/stargazers)
+
+
 
 </div>
 
