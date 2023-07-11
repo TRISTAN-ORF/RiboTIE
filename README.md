@@ -12,13 +12,13 @@
 </div>
 
 ## 📋 About
-RIBO-former is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RIBO-former on custom data.
+[RIBO-former](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RIBO-former on custom data.
 
-The data, saved model parameters and outputs used to perform the study and benchmarks as discussed in [the paper]() can are found [here](https://github.com/jdcla/RIBO_former_paper).
+The data, saved model parameters and outputs used to perform the study and benchmarks are found [in a separate repository](https://github.com/jdcla/RIBO_former_paper).
 
-When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer](https://github.com/jdcla/transcript_transformer), a supporting PyPi package created alongside this tool. 
+When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer), created in support of this tool. 
 
-The repository of TIS Transformer, a similar publication for the delineation of novel coding sequences, where the model relies on transcript sequence data, can be found [here](https://github.com/jdcla/TIS_transformer)
+Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
 
 ## 📖 User guide
 
@@ -26,8 +26,8 @@ Following are the instructions on how to set up RIBO-former and pre-process data
 The hardware requirements are:
 
 - ~100-150GB of RAM       (mostly data pre-processing)
-- ~500Gb of storage       (mostly dependent on RIBO data)
-- 1 24Gb GPU
+- ~500GB of storage       (mostly dependent on RIBO data)
+- 1 24GB vRAM GPU
 - ~4 CPU's
 
 For now, a defined folder structure is used:
