@@ -69,7 +69,7 @@ These packages need to be installed and accessible through your `PATH` variable:
 
 #### Python environment
 
-The application of predictive tools and part of the data processing is performed through python. As with any python project, it is recommended to create a custom environment using `conda`. Package installation is often easier achieved using `pip`, as conda often finds conflicts between packages that are typically not problematic.
+The application of predictive tools and part of the data processing is performed through python. As with any python project, it is recommended to create a custom environment (e.g. using `conda`). Package installation is often easier achieved using `pip`, as conda often finds conflicts between packages that are typically not problematic.
 
 To create a new environment, run:
 
@@ -83,7 +83,7 @@ Activate the new environment to ensure new python packages are installed within:
 conda activate riboformer_env
 ```
 
-`PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch`. GPU support is highly recommended.
+`PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch` first. GPU support is necessary. 
 
 The following python packages are used:
 - gtfparse
@@ -92,8 +92,6 @@ The following python packages are used:
 - tqdm
 - polars
 - transcript_transformer
-
-Before installing `transcript_transformer`, make sure that the correct pytorch with GPU support is installed first. Follow the instructions [here](https://pytorch.org/get-started/locally/).
 
 Install using pip (ensure you have activated the conda environment):
 
