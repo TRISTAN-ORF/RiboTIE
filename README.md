@@ -63,9 +63,9 @@ These packages need to be installed and accessible through your `PATH` variable:
 - [STAR](https://github.com/alexdobin/STAR)
 - [cutadapt](https://cutadapt.readthedocs.io/en/stable/)
 - [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-- [conda](https://docs.conda.io/en/latest/)
+- [pyfaidx](https://pypi.org/project/pyfaidx/#description)
 
-**Note**: It is possible to install `fastqc`, `cutadapt` through `conda`/`pip`, and include it as part of a python environment.
+**Note**: It is possible to install `fastqc`, `cutadapt` and `pyfaidx` through `conda`/`pip`, and include it as part of a python environment.
 
 #### Python environment
 
