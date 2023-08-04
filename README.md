@@ -3,9 +3,10 @@
 
 *Driving coding sequence discovery since 2023*
 
-[![GitHub license](https://img.shields.io/github/license/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/blob/main/LICENSE.md)
-[![GitHub issues](https://img.shields.io/github/issues/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/issues)
-[![GitHub stars](https://img.shields.io/github/stars/jdcla/transcript_transformer)](https://github.com/jdcla/transcript_transformer/stargazers)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8059764.svg)](https://doi.org/10.5281/zenodo.8059764)
+[![GitHub license](https://img.shields.io/github/license/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/blob/main/LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/issues)
+[![GitHub stars](https://img.shields.io/github/stars/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/stargazers)
 
 
 
@@ -14,7 +15,7 @@
 ## 📋 About
 [RIBO-former](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RIBO-former on custom data.
 
-The data, saved model parameters and outputs used to perform the study and benchmarks are found [in a separate repository](https://github.com/jdcla/RIBO_former_paper).
+The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/jdcla/RIBO_former_paper).
 
 When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer), created in support of this tool. 
 
