@@ -1,0 +1,66 @@
+gtf_path : path/to/gtf_file.gtf
+fa_path : path/to/fa_file.fa
+########################################################
+## add entries when using ribosome profiling data.
+## format: 'id : ribosome profiling paths'
+## leave empty for sequence input models (TIS transformer)
+## DO NOT change id after data is parsed to h5 file
+########################################################
+ribo_paths :
+  SRR000001 : path/to/mapped/riboseq.sam
+  SRR000002 : path/to/mapped/riboseq.sam
+  SRR000003 : path/to/mapped/riboseq.sam
+########################################################
+## Data is parsed and stored in a hdf5 format file.
+########################################################
+h5_path : path/to/hdf5_file.h5
+########################################################
+## For models using transcript sequence data.
+## This setting is used by the TIS-transformer.
+## Set to false when training on ribo-seq data
+########################################################
+seq : false
+#
+####################
+## ADVANCED SETUP ##
+####################
+#
+########################################################
+## A custom set of riboseq data selected for training.
+## Use ids applied in ribo_paths, leave commented if NA.
+########################################################
+#ribo:
+#  SRR000001
+#  SRR000003
+#
+########################################################
+## It is also possible to set offsets per read length.
+## NOT RECOMMENDED: loses read length information.
+## Functionality exists merely for benchmark
+########################################################
+#ribo:
+#  SRR000001:
+#    28 : 7
+#    29 : 10
+#    30 : 11
+#
+########################################################
+## Training times can be sped up by removing transcripts
+## with few reads. This does not affect samples within 
+## the validation/test set. Filtering is performed based
+## on the number of reads on a transcript.
+## format: riboseq/{id}/5/num_reads > "lambda x: x > {cutoff}"
+########################################################
+#cond :
+#  riboseq/SRR000001/5/num_reads : "lambda x: x > 0"
+#  riboseq/SRR000002/5/num_reads : "lambda x: x > 0"
+#  riboseq/SRR000003/5/num_reads : "lambda x: x > 0"
+#
+########################################################
+## Replicates can be merged where the number of mapped 
+## reads are summed for multiple experiments. 
+## expects list of merged sets based on rank in 'ribo' or
+## 'ribo_paths'
+########################################################
+#merged: [0, 1, 2]
+#
