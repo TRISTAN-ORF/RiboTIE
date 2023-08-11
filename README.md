@@ -17,219 +17,105 @@
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/jdcla/RIBO_former_paper).
 
-When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer), created in support of this tool. 
+When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer),  created in support of RIBO-former. 
 
 Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
 
+
+
 ## 📖 User guide
 
-Following are the instructions on how to set up RIBO-former and pre-process data. 
-The hardware requirements are:
+Following are the instructions on how to set up RIBO-former and pre-process data.
 
-- ~100-150GB of RAM       (mostly data pre-processing)
-- ~500GB of storage       (mostly dependent on RIBO data)
-- 1 24GB vRAM GPU
-- ~4 CPU's
+### Installation
 
-For now, a defined folder structure is used:
+`PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch` first. GPU support is necessary.
 
-```
-RIBOformer_tool                         root folder
-├── data                                input data
-│   ├── genome                          reference genome
-│   ├── ribo                            ribosome profiling
-├── scripts                             execution scripts
-│   ├── setup                           setup scripts
-│   ├── train                           train scripts
-├── models                              trained models
-├── outputs                             model predictions
-
-```
-The process of setting up is mostly automated. Many of the following steps are accomponied by scripts. Download and unzip the folder containing scripts to a desired location, given access to the aforementioned hardware requirements.
-
-The folder and scripts can be downloaded using `git clone`
-
-Note that scripts can take up to multiple hours, and require to be run from a terminal that will be active for that amount of time. `tmux` software can be used to detach from a terminal running a script without terminating it.
-
-**Note**: In order to successfully perform the computations listed within the script files, it is important to run the scripts from within the `scripts/setup/` folder. Work is being done to integrate all steps into a single end-to-end pipeline**
-
-### Software requirements
-
-#### System
-Several software packages need to be installed for the scripts to succeed. 
-
-These packages need to be installed and accessible through your `PATH` variable:
-
-- [samtools](https://www.htslib.org/)
-- [STAR](https://github.com/alexdobin/STAR)
-- [cutadapt](https://cutadapt.readthedocs.io/en/stable/)
-- [fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
-- [pyfaidx](https://pypi.org/project/pyfaidx/#description)
-
-**Note**: It is possible to install `fastqc`, `cutadapt` and `pyfaidx` through `conda`/`pip`, and include it as part of a python environment.
-
-#### Python environment
-
-The application of predictive tools and part of the data processing is performed through python. As with any python project, it is recommended to create a custom environment (e.g. using `conda`). Package installation is often easier achieved using `pip`, as conda often finds conflicts between packages that are typically not problematic.
-
-To create a new environment, run:
-
-```
-conda create --name riboformer_env
-```
-
-Activate the new environment to ensure new python packages are installed within:
-
-```
-conda activate riboformer_env
-```
-
-`PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch` first. GPU support is necessary. 
-
-The following python packages are used:
-- gtfparse
-- pyfaidx
-- pandas
-- tqdm
-- polars
-- transcript_transformer
-
-Install using pip (ensure you have activated the conda environment):
+After installing `PyTorch`, run
 
 ```bash
-pip install gtfparse pandas tqdm polars pysam transcript_transformer
+pip install transcript_transformer
 ```
 
-Make sure all the steps are run with the custom evironment activated.
+### Usage
 
-### Data Preprocessing
+Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. Required are:
 
-Data preprocessing includes setting up a reference genome and mapping ribosome profiling reads. 
-After
+- reference assembly files (`*.gtf`, `*.fa`)
+- ribosome profiling reads (`*.sam`) **mapped to the transcriptome**
 
-#### Setting up the reference genome
-
-Start with setting up the reference genome. Running the script `scripts/setup/1_get_ref_genome.sh` will download and map the relevant genome into the `data/genome/` folder. Note that the version number of the human genome is a variable at the start of the script and can be altered in the future.
-Within the script folder, run:
-
-```
-bash 1_get_ref_genome.sh
-```
-
-The next step is to create indexes for our mapping software `STAR`. Run:
-
-```
-bash 2_STAR_ref_genome.sh
-```
-
-#### Mapping ribosome profiling data
-
-To map the ribosome profiling data to the transcriptome, the ribosomal data need first be processed and mapped. Different ribosome experiments exist within the `data/ribo/` subfolder. For each experiment, create and name a folder after the experiment. Within the folder, place the `.fastq` ribosome file following the same name convention.
-
-`data/ribo/metadata.txt` is a tab delimited metadata file containing the names (i.e. folder name) and adapter sequences for each experiment. Include the relevant information when adding new experiments in the folder.
-
-
-An example folder layout:
-
-```
-RIBOformer_tool                         root folder
-├── data                                input data
-│   ├── ribo                            ribosome profiling
-│   │   ├── experiment_1                experiment folder
-│   │   │   ├── experiment_1.fastq   
-│   │   ├── experiment_2                experiment folder
-│   │   │   ├── experiment_2.fastq
-│   │   ├── metadata.txt                experiment metadata file
-
-...
+```yaml
+gtf_path : path/to/gtf_file.gtf
+fa_path : path/to/fa_file.fa
+########################################################
+## add entries to ribosome profiling data.
+## format: 'id : ribosome profiling paths'
+########################################################
+ribo_paths :
+  SRR000001 : path/to/mapped/riboseq.sam
+  SRR000002 : path/to/mapped/riboseq.sam
+  SRR000003 : path/to/mapped/riboseq.sam
+########################################################
+## database path (parsed data output)
+########################################################
+h5_path : my_experiment.h5
 ```
 
-After adding all experiments and editing the `metadata.txt` file, run from within the `scripts/setup` folder:
+When running RIBO-former, the following steps are performed:
 
-```
-bash 3_map_ribo_reads.sh
-```
+1. Parse all data to a HDF5 database (`h5_path`)
+2. Fine-tune pre-trained models on non-overlapping folds of the data. This allows the model to learn data-set specific correlations that are relevant.
+3. Get model predictions for all positions of the transcriptome
+4. Collect metadata for the top ranking predictions
 
-This will cut adapter sequences and map the reads to the genome and transcriptome.
+A pre-trained model is used as this improves performances while drastically reducing computational resources required for the fine-tuning as compared to training models from scratch.
 
-**Note**: The script `3_map_ribo_reads.sh` will always process all experiments listed within the `metadata.txt` file. Consider using multiple `metadata.txt` files and editing the last line of the script (i.e. which metadata file is read) when it is not desired to start (re-)mapping the ribosome reads for all experiments.
-
-### Formatting the model input data
-
-The input data for the model is stored using the `hdf5` format. This file type allows quick access of selected data without the requirement of loading the full file into memory. It is furthermore faster than loading data from thousands of individual smaller files. the `hdf5` format supports storing data in a hierarchial data structure. 
-Data saving and loading is achieved using the `h5py` python module.
-
-The data is stored by transcript and information type. Information belonging to a single transcript is mapped according to the index they populate within each `h5py.dataset`.  Using this structure, it is fast to load various types of data given a transcript index. Ribosome reads are stored by read length and 5' position. Multiple experiments can be stored within a single `hdf5` file under the `/transcript/ribo/` file path. As ribosome mapping data is sparse, the python modules `scipy.sparse` and `h5max` are used to store and load sparse matrices (saved as multiple vector arrays under `data`, `indices`, `indptr` and `shape`). 
-
-The internal file structure is as follows:
-
-```
-GRCh38_v107.h5                              (h5py.file)
-    transcript                              (h5py.group)
-    ├── tis                                 (h5py.dataset, dtype=vlen(int))
-    ├── contig                              (h5py.dataset, dtype=str)
-    ├── id                                  (h5py.dataset, dtype=str)
-    ├── seq                                 (h5py.dataset, dtype=vlen(int))
-    ├── ribo                                (h5py.group)
-    │   ├── SRR0000001                      (h5py.group)
-    │   │   ├── 5                           (h5py.group)
-    │   │   │   ├── data                    (h5py.dataset, dtype=vlen(int))
-    │   │   │   ├── indices                 (h5py.dataset, dtype=vlen(int))
-    │   │   │   ├── indptr                  (h5py.dataset, dtype=vlen(int))
-    │   │   │   ├── shape                   (h5py.dataset, dtype=vlen(int))
-    │   ├── ...
-    │   ....
-    
+To run RIBO-former:
+```bash
+riboformer yaml_file.yml
 ```
 
-In a first step, the `GRCh38_v107.h5` file is generated containing the transcriptome data (e.g. `tis`, `seq`, ...). This is achieved by parsing the reference `gtf` and `fasta` files from `data/genome/` to generate the `GRCh38_v107.h5` file within the `data/` folder. 
-
-Run from the `script/setup/` folder:
-
-```
-bash 4_process_transcriptome.sh
+For more information about specific options, try:
+```bash
+riboformer -h
 ```
 
 
-The next step parses the mapped ribosome reads and incorporates them within the newly generated `GRCh38_v107.h5` file. Based on the size of the output `*.sam` file generated during the mapping step, this process can require >100Gb of RAM
 
-```
-bash 5_process_ribo.sh
-```
+## pre-trained models
 
-**Note**: This script will process all ribosome experiments listed within the `data/ribo/metadata.txt` file. When it is desired to process only part of the experiments, edit either the python script or `metadata.txt` file.
+Currently, only a single set of pre-trained models is available: `50perc_06_23.ckpt`. This model is selected by default.
+The models are pre-trained on non-overlapping parts of the transcriptome, using the data featured by SRR592960, SRR1562539, SRR1573939, SRR1610244, SRR1976443, SRR2536856, SRR2873532, SRR3575904.
 
-### Model Training
+|        |  Train                  | Validation | Applied on                    |
+|--------|------------------------|------------|--------------------------------|
+| Fold 1 |  3, 5, 7, 11, 13, 15, 19, 21, X | 1, 9, 17     | 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, Y |
+| Fold 2 |  2, 6, 8, 10, 14, 16, 18, 22, Y | 4, 12, 20    | 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, X  |
+Listed identifiers refer to chromosomes.
 
-The scripts used to train the model are located under `/scripts/train`. The [transcript_transformer](https://github.com/jdcla/transcript_transformer) python package handles training and use of the predictive models. 
+Adding the ability to create custom pre-trained models through the `riboformer` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
 
-RIBO-former can be used to map the full translatome of a ribosome profiling experiment. For this, multiple models are used that are trained on different folds of the data. The parts of the transcriptome excluded from the training and model selection process can be used for mapping (i.e. unbiased). In the following set-up, we use 5/6 of the data to train/select a model with which the remaining 1/6 of the transcriptome is used to map the TIS on.
 
-The script `/scripts/train/train.sh` executes the training of six models trained on the various folds. Each model takes around ~12 hours to converge. It is possible to run the script as is, training all models in series over a total time of around 3 days. Alternatively, if multiple GPUs are available, it might be preferable to break the script up and train the models in parallel.
+## How can RIBO-former improve
 
-When `transcript_transformer` is called, it requires a dictionary file as input that lays out the input file structure of the `hdf5` file and the data used to train the model. This file is located under `scripts/train/template.json`. **Note that it is important to change the name of the ribosome data path according to the experiment name used before.**
+This list is non-exhaustive, but rather lists low-hanging fruit. 
 
-**Note:** It is recommended to duplicate and alter `template.json` in line with the ribosome experiments applied. Additionally, it is recommended to alter the names of the trained models (defined under `--name` in `train.sh`) in accordance with the ribosome data sets applied.
+### Calibration
 
-`template.json`:
-```
-{
-  "h5_path":"../data/GRCh38_v107.h5",
-  "exp_path":"transcript",
-  "y_path":"tis",
-  "chrom_path":"contig",
-  "id_path":"id",
-  "seq":false,                                  # No sequence data is used as input
-  "ribo":{
-    experiment_1/5: {}                          <-- Make sure to change this
-      }
-}
-```
+In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RIBO-former therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
 
-To train the models in sequence, run:
-```
-bash train.sh
-```
+**Objective**: Apply calibration steps that seeks to improve the ranking of multiple sets of predictions from different folds of the data.
+
+Note: evaluating PR/ROC AUC of the independent sets and the combined set showed only a slight decline in performance (~2%). As such, no time has been invested to implement improvements at this point.
+
+### Near-miss identifier
+
+RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information. Essentially, it only parses ribosome profiling information along the transcript.
+
+It is observed that, for transcripts featuring a lower number of mapped reads (low coverage and read depth), RIBO-former can miss the exact location of well-known translation initiation sites by several bases.
+
+**Objective**: Implement a neighborhood searching step that evaluates near-miss predictions when processing a set of top-ranking predictions. This information can be included as part of the metadata.
+
 
 ## ✔️ Roadmap
 
@@ -237,9 +123,16 @@ bash train.sh
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
 - [ ] Post-processing features
-- [ ] Model output aggregation and processing 
-- [ ] Wrap it all together: 
-    - [ ] Single pip package
-    - [ ] Simplified/intuitive utility
-    - [ ] End-to-end pipeline
+    - [ ] Calibrate predictions from different folds/models
+    - [ ] Assess near-miss predictions
+- [ ] Usability
+    - [ ] User-defined filtering
+    - [ ] User-defined output formatting
+    - [ ] Pre-training models on custom sets of data
+- [x] Wrap it: 
+    - [x] Single pip package
+    - [x] Simplify README
+    - [x] Create a custom call function
+    - [x] Add pre-trained models to package, pre-define required input arguments
+    - [x] End-to-end pipeline
 - [ ] Optional: support for GUI (streamlit)
