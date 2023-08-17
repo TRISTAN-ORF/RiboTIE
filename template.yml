@@ -49,7 +49,7 @@ seq : false
 ## with few reads. This does not affect samples within 
 ## the validation/test set. Filtering is performed based
 ## on the number of reads on a transcript.
-## format: riboseq/{id}/5/num_reads > "lambda x: x > {cutoff}"
+## format: riboseq/{id}/5/num_reads : "lambda x: x > {cutoff}"
 ########################################################
 #cond :
 #  riboseq/SRR000001/5/num_reads : "lambda x: x > 0"
