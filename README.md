@@ -128,6 +128,7 @@ It is observed that, for transcripts featuring a lower number of mapped reads (l
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
 - [ ] Post-processing features
+    - [X] Result table (top predictions)
     - [ ] Calibrate predictions from different folds/models
     - [ ] Assess near-miss predictions
 - [ ] Usability
