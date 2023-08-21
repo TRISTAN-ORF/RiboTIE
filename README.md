@@ -80,12 +80,12 @@ For more information about specific options, try:
 riboformer -h
 ```
 
-**Note**: Currently, parsing data from `.sam` files to the `h5` database quite RAM demanding. For multiple data sets, this process might run for several hours. It is possible to pre-process the data without doing fine-tuning and prediction by running
+**Note**: Currently, parsing data from `.sam` files to the `h5` database can require high amounts of RAM. For multiple data sets, this process might run for several hours. It is possible to pre-process the data without doing fine-tuning and prediction by running:
 
 ```bash
 riboformer yaml_file.yml --data-process
 ```
-When running `riboformer yaml_file.yml` afterwards, the module will automatically detect data already present in the `h5` database and will skip straight to tuning the model and performing the predictions.
+Afterwards, running `riboformer yaml_file.yml`, the module will automatically detect data already present in the `h5` database, skipping to the fine-tuning step.
 
 ## pre-trained models
 
