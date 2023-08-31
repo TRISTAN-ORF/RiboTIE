@@ -131,11 +131,11 @@ This list is non-exhaustive, but rather lists low-hanging fruit.
 
 ### Calibration
 
-In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RIBO-former therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
+In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RIBO-former therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned, where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
 
-**Objective**: Apply calibration steps that seeks to improve the ranking of multiple sets of predictions from different folds of the data.
+**Objective**: Apply calibration steps that seeks to improve the creation of a merged ranking when combining multiple sets of predictions from different folds of the data.
 
-Note: evaluating PR/ROC AUC of the independent sets and the combined set showed only a slight decline in performance (~2%). As such, no time has been invested to implement improvements at this point.
+**Note:** evaluating PR/ROC AUC of the independent sets and the combined set showed only a slight decline in performance (~2%). As such, no time has been invested to implement improvements at this point.
 
 ### Near-miss identifier
 
@@ -144,6 +144,8 @@ RIBO-former, unlike previous tools processing ribosome profiling data, does not 
 It is observed that, for transcripts featuring a lower number of mapped reads (low coverage and read depth), RIBO-former can miss the exact location of well-known translation initiation sites by several bases.
 
 **Objective**: Implement a neighborhood searching step that evaluates near-miss predictions when processing a set of top-ranking predictions. This information can be included as part of the metadata.
+
+**Note:** The result table currently includes the feature `dist_from_canonical_TIS`, which can be used quickly identify near-miss TISs. In addition, other feature columns like `rpb_in_orf` and `rpb_out_orf` can offer insight on the number of aligned reads along the ORF and transcript.
 
 
 ## ✔️ Roadmap
