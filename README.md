@@ -112,7 +112,7 @@ Essentially, RIBO-former works by detecting translation initiation sites using o
 
 **Note:** striked-through text refers to steps typically performed by existing methods but ommited by RIBO-former.
 
-Fine-tuning is important as ribosome profiling data has shown to be highly variable between experiments, with biological variability (tissues, sample age, ...) and technical variability (lab protocol, machine calibration, ...) are known to play a role.
+Fine-tuning is important as ribosome profiling data has shown to be highly variable between experiments, with biological variability (tissues, sample age, ...) and technical variability (lab protocol, machine calibration, ...) playing a role.
 RIBO-former is trained and fine-tuned using a set of canonical coding sequences. This approach does not prevent the trained model to find non-canonical ORFs.
 The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
 No additional post-processing steps are performed.
