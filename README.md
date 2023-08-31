@@ -94,14 +94,37 @@ The models are pre-trained on non-overlapping parts of the transcriptome, using 
 
 |        |  Train                  | Validation | Applied on                    |
 |--------|------------------------|------------|--------------------------------|
-| Fold 1 |  3, 5, 7, 11, 13, 15, 19, 21, X | 1, 9, 17     | 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, Y |
+| Fold 1 |  3, 5, 7, 11, 13, 15, 19, 21, X | 1, 9, 17     | 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, Y, ... |
 | Fold 2 |  2, 6, 8, 10, 14, 16, 18, 22, Y | 4, 12, 20    | 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, X  |
 Listed identifiers refer to chromosomes.
 
 Adding the ability to create custom pre-trained models through the `riboformer` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
 
 
-## How can RIBO-former improve
+## How does RIBO-former work?
+
+See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1) for a detailed description.
+Essentially, RIBO-former works by detecting translation initiation sites using only ribosome profiling data using transformer networks. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. Ribo-former similarly returns predictions for each position on each transcript.
+
+<div align="center">
+<img src="https://github.com/jdcla/RIBO_former/raw/main/ribo_intro.png" width="800">
+</div>
+
+**Note:** striked-through text refers to steps typically performed by existing methods but ommited by RIBO-former.
+
+Fine-tuning is important as ribosome profiling data has shown to be highly variable between experiments, with biological variability (tissues, sample age, ...) and technical variability (lab protocol, machine calibration, ...) are known to play a role.
+RIBO-former is trained and fine-tuned using a set of canonical coding sequences. This approach does not prevent the trained model to find non-canonical ORFs.
+The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
+No additional post-processing steps are performed.
+From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
+No filtering is applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
+
+This technique was shown to substantially outperform previous methods. We hypothesize this gain to be achieved through various factors:
+- fine-tuning on each data set, the model learns custom rules present for each data set
+- inclusion of read length information
+- elegant approach with very few custom rules for data (pre-)processing or selection.
+
+## How can RIBO-former improve?
 
 This list is non-exhaustive, but rather lists low-hanging fruit. 
 
