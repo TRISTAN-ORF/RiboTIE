@@ -122,7 +122,7 @@ No filtering is applied based on the characteristics of the translated ORFs (e.g
 This technique was shown to substantially outperform previous methods. We hypothesize this gain to be achieved through various factors:
 - fine-tuning on each data set, the model learns custom rules present for each data set
 - inclusion of read length information
-- elegant approach with very few custom rules for data (pre-)processing or selection.
+- elegant approach with very few custom hardcoded rules for data (pre-)processing or selection.
 - use of a state-of-the-art machine learning tools (transformer networks), which are perfectly suited for the data type (a variable number of input vectors). 
 
 ## How can RIBO-former improve?
