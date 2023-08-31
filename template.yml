@@ -30,8 +30,8 @@ seq : false
 ## Use ids applied in ribo_paths, leave commented if NA.
 ########################################################
 #ribo:
-#  SRR000001
-#  SRR000003
+#  - SRR000001
+#  - SRR000003
 #
 ########################################################
 ## It is also possible to set offsets per read length.
