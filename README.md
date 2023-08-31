@@ -104,7 +104,7 @@ Adding the ability to create custom pre-trained models through the `riboformer` 
 ## How does RIBO-former work?
 
 See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1) for a detailed description.
-Essentially, RIBO-former works by detecting translation initiation sites using only ribosome profiling data using transformer networks. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. Ribo-former similarly returns predictions for each position on each transcript.
+Essentially, RIBO-former works by detecting translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. Ribo-former similarly returns predictions for each position on each transcript.
 
 <div align="center">
 <img src="https://github.com/jdcla/RIBO_former/raw/main/ribo_intro.png" width="800">
