@@ -1,5 +1,5 @@
-gtf_path : path/to/gtf_file.gtf
-fa_path : path/to/fa_file.fa
+gtf_path : test/GRCh38v110_snippet.gtf
+fa_path : test/GRCh38v110_snippet.fa
 ########################################################
 ## add entries when using ribosome profiling data.
 ## format: 'id : ribosome profiling paths'
@@ -7,13 +7,13 @@ fa_path : path/to/fa_file.fa
 ## DO NOT change id after data is parsed to h5 file
 ########################################################
 ribo_paths :
-  SRR000001 : path/to/mapped/riboseq.sam
-  SRR000002 : path/to/mapped/riboseq.sam
-  SRR000003 : path/to/mapped/riboseq.sam
+  SRR000001 : test/SRR000001.sam
+  SRR000002 : test/SRR000002.sam
+  SRR000003 : test/SRR000003.sam
 ########################################################
 ## Data is parsed and stored in a hdf5 format file.
 ########################################################
-h5_path : path/to/hdf5_file.h5
+h5_path : test/test_db.h5
 ########################################################
 ## For models using transcript sequence data.
 ## This setting is used by the TIS-transformer.
@@ -30,8 +30,8 @@ seq : false
 ## Use ids applied in ribo_paths, leave commented if NA.
 ########################################################
 #ribo:
-#  SRR000001
-#  SRR000003
+#  - SRR000001
+#  - SRR000003
 #
 ########################################################
 ## It is also possible to set offsets per read length.
@@ -49,7 +49,7 @@ seq : false
 ## with few reads. This does not affect samples within 
 ## the validation/test set. Filtering is performed based
 ## on the number of reads on a transcript.
-## format: riboseq/{id}/5/num_reads > "lambda x: x > {cutoff}"
+## format: riboseq/{id}/5/num_reads : "lambda x: x > {cutoff}"
 ########################################################
 #cond :
 #  riboseq/SRR000001/5/num_reads : "lambda x: x > 0"
