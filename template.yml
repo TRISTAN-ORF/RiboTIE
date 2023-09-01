@@ -59,8 +59,8 @@ seq : false
 ########################################################
 ## Replicates can be merged where the number of mapped 
 ## reads are summed for multiple experiments. 
-## expects list of merged sets based on rank in 'ribo' or
-## 'ribo_paths'
+## expects nested list of merged sets based on rank in 
+##'ribo' or 'ribo_paths'
 ########################################################
-#merged: [0, 1, 2]
+#merge: [[0, 1, 2]]
 #
