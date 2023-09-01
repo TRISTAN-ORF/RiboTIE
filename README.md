@@ -158,6 +158,7 @@ It is observed that, for transcripts featuring a lower number of mapped reads (l
     - [ ] Calibrate predictions from different folds/models
     - [ ] Assess near-miss predictions
 - [ ] Usability
+    - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
     - [ ] User-defined filtering
     - [ ] User-defined output formatting
     - [ ] Pre-training models on custom sets of data
