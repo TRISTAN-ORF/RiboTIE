@@ -13,13 +13,11 @@ ribo_paths :
 ########################################################
 ## Data is parsed and stored in a hdf5 format file.
 ########################################################
-h5_path : test/test_db.h5
+h5_path : GRCh38v110_snippet.h5
 ########################################################
-## For models using transcript sequence data.
-## This setting is used by the TIS-transformer.
-## Set to false when training on ribo-seq data
+## Out prefix for predictions, defaults to hdf5 path
 ########################################################
-seq : false
+# out_prefix : riboformer/template
 #
 ####################
 ## ADVANCED SETUP ##
@@ -28,39 +26,37 @@ seq : false
 ########################################################
 ## A custom set of riboseq data selected for training.
 ## Use ids applied in ribo_paths, leave commented if NA.
+## Replicates can be merged where the number of mapped 
+## reads are summed for multiple experiments. 
 ########################################################
+## example: only use SRR000001 and SRR000003
 #ribo:
 #  - SRR000001
 #  - SRR000003
 #
-########################################################
-## It is also possible to set offsets per read length.
-## NOT RECOMMENDED: loses read length information.
-## Functionality exists merely for benchmark
-########################################################
+## example: SRR000001 and SRR000002 are merged (replicates)
 #ribo:
-#  SRR000001:
-#    28 : 7
-#    29 : 10
-#    30 : 11
+#  - - SRR000001
+#    - SRR000002
+#  - - SRR000003
 #
 ########################################################
 ## Training times can be sped up by removing transcripts
-## with few reads. This does not affect samples within 
-## the validation/test set. Filtering is performed based
-## on the number of reads on a transcript.
-## format: riboseq/{id}/5/num_reads : "lambda x: x > {cutoff}"
+## with few reads from the training step. 
+## This does not affect samples within the test set. 
+## Filtering is performed based on the number of reads 
+## mapped to the transcript.
 ########################################################
+## example: ommit transcripts with less than 6 reads during 
+## training/validation
+cond :
+  ribo:
+    num_reads : x > 6
+#
+## example: custom rules per data set
 #cond :
-#  riboseq/SRR000001/5/num_reads : "lambda x: x > 0"
-#  riboseq/SRR000002/5/num_reads : "lambda x: x > 0"
-#  riboseq/SRR000003/5/num_reads : "lambda x: x > 0"
-#
-########################################################
-## Replicates can be merged where the number of mapped 
-## reads are summed for multiple experiments. 
-## expects list of merged sets based on rank in 'ribo' or
-## 'ribo_paths'
-########################################################
-#merged: [0, 1, 2]
-#
+#  ribo:
+#    num_reads : 
+#      SRR000001 : "x > 10"
+#      SRR000002 : "x > 0"
+#      SRR000003 : "x > 0"
