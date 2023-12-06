@@ -42,7 +42,7 @@ pip install transcript_transformer
 Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. Required are:
 
 - reference assembly files (`*.gtf`, `*.fa`)
-- ribosome profiling reads (`*.sam`) **mapped to the transcriptome**
+- ribosome profiling reads (`*.sam`, `*.bam`) **mapped to the transcriptome**
 
 ```yaml
 gtf_path : path/to/gtf_file.gtf
@@ -64,7 +64,10 @@ h5_path : my_experiment.h5
 When running RIBO-former, the following steps are performed:
 
 1. Parse all data to a HDF5 database (`h5_path`)
-2. Fine-tune pre-trained models on non-overlapping folds of the data. This allows the model to learn data-set specific correlations that are relevant.
+
+subsequently, for every data set in `ribo_paths`:
+
+2. Fine-tune pre-trained models on non-overlapping folds of the data. 
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
 
@@ -75,17 +78,33 @@ To run RIBO-former:
 riboformer yaml_file.yml
 ```
 
-For more information about specific options, try:
+For more information about various other options, try:
 ```bash
 riboformer -h
 ```
 
-**Note**: Currently, parsing data from `.sam` files to the `h5` database can require high amounts of RAM. For multiple data sets, this process might run for several hours. It is possible to pre-process the data without doing fine-tuning and prediction by running:
+### Parsing data
+Parsing data can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
 riboformer yaml_file.yml --data-process
 ```
-Afterwards, running `riboformer yaml_file.yml`, the module will automatically detect data already present in the `h5` database, skipping to the fine-tuning step.
+
+Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
+
+### Parsing results
+
+RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected (see section  `Near-miss identifier`) . 
+
+It is possible to set the number of highest predictions within the result table or adjust near-miss corrections.
+This can furthermore be achieved without re-running previous steps (i.e., when `*.npy` files have been generated).
+
+e.g., create result tables without applying near-miss correction:
+
+```bash
+riboformer yaml_file.yml --results --no-correction
+```
+
 
 ## pre-trained models
 
@@ -135,18 +154,13 @@ In line with good machine learning practice, models are not used to obtain predi
 
 **Objective**: Apply calibration steps that seeks to improve the creation of a merged ranking when combining multiple sets of predictions from different folds of the data.
 
-**Note:** evaluating PR/ROC AUC of the independent sets and the combined set showed only a slight decline in performance (~2%). As such, no time has been invested to implement improvements at this point.
+**Note:** evaluating PR/ROC AUC of the independent sets and the combined set showed only a very slight decline in performance (~1%). At this point, no time has been invested to address this issue.
 
 ### Near-miss identifier
 
-RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information. Essentially, it only parses ribosome profiling information along the transcript.
+RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
 
-It is observed that, for transcripts featuring a lower number of mapped reads (low coverage and read depth), RIBO-former can miss the exact location of well-known translation initiation sites by several bases.
-
-**Objective**: Implement a neighborhood searching step that evaluates near-miss predictions when processing a set of top-ranking predictions. This information can be included as part of the metadata.
-
-**Note:** The result table currently includes the feature `dist_from_canonical_TIS`, which can be used quickly identify near-miss TISs. In addition, other feature columns like `rpb_in_orf` and `rpb_out_orf` can offer insight on the number of aligned reads along the ORF and transcript.
-
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag.
 
 ## ✔️ Roadmap
 
@@ -154,12 +168,12 @@ It is observed that, for transcripts featuring a lower number of mapped reads (l
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
 - [ ] Post-processing features
-    - [X] Result table (top predictions)
+    - [x] Result table (top predictions)
     - [ ] Calibrate predictions from different folds/models
-    - [ ] Assess near-miss predictions
+    - [x] Assess near-miss predictions
 - [ ] Usability
     - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
-    - [ ] User-defined filtering
+    - [x] User-defined filtering
     - [ ] User-defined output formatting
     - [ ] Pre-training models on custom sets of data
 - [x] Wrap it: 
