@@ -105,6 +105,14 @@ e.g., create result tables without applying near-miss correction:
 riboformer yaml_file.yml --results --no-correction
 ```
 
+### Evaluating results
+
+The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend translated ORFs predictions for which:
+
+- the model output (`output`) is larger than 0.2
+- start codons (`start_codon`) are near-cognate (*TG)
+
+Several plot functions are currently being developped that will give a visual exploration of the results.
 
 ## pre-trained models
 
@@ -160,7 +168,7 @@ In line with good machine learning practice, models are not used to obtain predi
 
 RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
 
-It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag.
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
 
 ## ✔️ Roadmap
 
