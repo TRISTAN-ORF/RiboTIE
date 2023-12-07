@@ -94,7 +94,7 @@ Once completed, the tool will automatically skip to the fine-tuning and predicti
 
 ### Parsing results
 
-RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected (see section  `Near-miss identifier`) . 
+RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)) . 
 
 It is possible to set the number of highest predictions within the result table or adjust near-miss corrections.
 This can furthermore be achieved without re-running previous steps (i.e., when `*.npy` files have been generated).
@@ -107,9 +107,9 @@ riboformer yaml_file.yml --results --no-correction
 
 ### Evaluating results
 
-The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend translated ORFs predictions for which:
+The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend selecting translated ORFs predictions for which:
 
-- the model output (`output`) is larger than 0.2
+- the model output (`output`) is larger than 0.15
 - start codons (`start_codon`) are near-cognate (*TG)
 
 Several plot functions are currently being developped that will give a visual exploration of the results.
