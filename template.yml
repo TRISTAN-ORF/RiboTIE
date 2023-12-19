@@ -1,9 +1,11 @@
+########################################################
+## assembly and reference files of GENOME.
+########################################################
 gtf_path : test/GRCh38v110_snippet.gtf
 fa_path : test/GRCh38v110_snippet.fa
 ########################################################
-## add entries when using ribosome profiling data.
+## reads mapped to TRANSCRIPTOME (*.bam/*.sam)
 ## format: 'id : ribosome profiling paths'
-## leave empty for sequence input models (TIS transformer)
 ## DO NOT change id after data is parsed to h5 file
 ########################################################
 ribo_paths :
@@ -11,7 +13,7 @@ ribo_paths :
   SRR000002 : test/SRR000002.sam
   SRR000003 : test/SRR000003.sam
 ########################################################
-## Data is parsed and stored in a hdf5 format file.
+## path to hdf5 database created to store data.
 ########################################################
 h5_path : GRCh38v110_snippet.h5
 ########################################################
