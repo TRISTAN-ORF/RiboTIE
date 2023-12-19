@@ -41,8 +41,8 @@ pip install transcript_transformer
 
 Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
 
-- **genome-level** reference and assembly files (`*.gtf`, `*.fa`)
-- ribosome profiling reads (`*.sam`, `*.bam`) **mapped to the transcriptome**
+- a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
+- ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
 
 ```yaml
 gtf_path : path/to/gtf_file.gtf
