@@ -39,10 +39,10 @@ pip install transcript_transformer
 
 ### Usage
 
-Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. Required are:
+Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
 
-- reference assembly files (`*.gtf`, `*.fa`)
-- ribosome profiling reads (`*.sam`, `*.bam`) **mapped to the transcriptome**
+- a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
+- ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
 
 ```yaml
 gtf_path : path/to/gtf_file.gtf
@@ -94,7 +94,7 @@ Once completed, the tool will automatically skip to the fine-tuning and predicti
 
 ### Parsing results
 
-RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected (see section  `Near-miss identifier`) . 
+RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)) . 
 
 It is possible to set the number of highest predictions within the result table or adjust near-miss corrections.
 This can furthermore be achieved without re-running previous steps (i.e., when `*.npy` files have been generated).
@@ -105,6 +105,14 @@ e.g., create result tables without applying near-miss correction:
 riboformer yaml_file.yml --results --no-correction
 ```
 
+### Evaluating results
+
+The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend selecting translated ORFs predictions for which:
+
+- the model output (`output`) is larger than 0.15
+- start codons (`start_codon`) are near-cognate (*TG)
+
+Several plot functions are currently being developped that will give a visual exploration of the results.
 
 ## pre-trained models
 
@@ -160,7 +168,7 @@ In line with good machine learning practice, models are not used to obtain predi
 
 RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
 
-It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag.
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
 
 ## ✔️ Roadmap
 
