@@ -87,7 +87,7 @@ riboformer -h
 Parsing data can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
-riboformer yaml_file.yml --data-process
+riboformer yaml_file.yml --data
 ```
 
 Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
