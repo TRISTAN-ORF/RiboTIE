@@ -107,10 +107,13 @@ riboformer yaml_file.yml --results --no-correction
 
 ### Evaluating results
 
-The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend selecting translated ORFs predictions for which:
+The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend the following conditions for filtering down the results:
 
 - the model output (`output`) is larger than 0.15
 - start codons (`start_codon`) are near-cognate (*TG)
+- a valid translation termination site (`TTS_on_transcript`) is present on transcript
+
+Of course, based on the study objective, custom conditions might be required. 
 
 Several plot functions are currently being developped that will give a visual exploration of the results.
 
