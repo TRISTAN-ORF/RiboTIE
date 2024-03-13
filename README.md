@@ -12,7 +12,7 @@
 </div>
 
 ## 📋 About
-**Note that RiboTIE was formerly known as RIBO-former**
+**Note that RiboTIE was formerly known as RIBO-former.** Changes in naming are ongoing.
 
 [RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
