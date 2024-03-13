@@ -1,5 +1,5 @@
 <div align="center">
-<h1>🧮 RIBO-former</h1>
+<h1>🧮 RiboTIE </h1>
 
 *Driving coding sequence discovery since 2023*
 
@@ -9,15 +9,16 @@
 [![GitHub stars](https://img.shields.io/github/stars/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/stargazers)
 
 
-
 </div>
 
 ## 📋 About
-[RIBO-former](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RIBO-former on custom data.
+**Note that RiboTIE was formerly known as RIBO-former**
+
+[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/jdcla/RIBO_former_paper).
 
-When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer),  created in support of RIBO-former. 
+When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer),  created in support of RiboTIE. 
 
 Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
 
@@ -25,7 +26,7 @@ Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transforme
 
 ## 📖 User guide
 
-Following are the instructions on how to set up RIBO-former and pre-process data.
+Following are the instructions on how to set up RiboTIE and pre-process data.
 
 ### Installation
 
@@ -61,7 +62,7 @@ ribo_paths :
 h5_path : my_experiment.h5
 ```
 
-When running RIBO-former, the following steps are performed:
+When running RiboTIE, the following steps are performed:
 
 1. Parse all data to a HDF5 database (`h5_path`)
 
@@ -73,7 +74,7 @@ subsequently, for every data set in `ribo_paths`:
 
 A pre-trained model is used as this improves performances while drastically reducing computational resources required for the fine-tuning as compared to training models from scratch.
 
-To run RIBO-former:
+To run RiboTIE:
 ```bash
 riboformer yaml_file.yml
 ```
@@ -94,7 +95,7 @@ Once completed, the tool will automatically skip to the fine-tuning and predicti
 
 ### Parsing results
 
-RIBO-former evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RIBO-former collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)) . 
+RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)) . 
 
 It is possible to set the number of highest predictions within the result table or adjust near-miss corrections.
 This can furthermore be achieved without re-running previous steps (i.e., when `*.npy` files have been generated).
@@ -107,7 +108,7 @@ riboformer yaml_file.yml --results --no-correction
 
 ### Evaluating results
 
-The result table returned by RIBO-former contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend the following conditions for filtering down the results:
+The result table returned by RiboTIE contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend the following conditions for filtering down the results:
 
 - the model output (`output`) is larger than 0.15
 - start codons (`start_codon`) are near-cognate (*TG)
@@ -131,19 +132,19 @@ Listed identifiers refer to chromosomes.
 Adding the ability to create custom pre-trained models through the `riboformer` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
 
 
-## How does RIBO-former work?
+## How does RiboTIE work?
 
 See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1) for a detailed description.
-Essentially, RIBO-former works by detecting translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. Ribo-former similarly returns predictions for each position on each transcript.
+Essentially, RiboTIE works by detecting translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. RiboTIE similarly returns predictions for each position on each transcript.
 
 <div align="center">
 <img src="https://github.com/jdcla/RIBO_former/raw/main/ribo_intro.png" width="800">
 </div>
 
-**Note:** striked-through text refers to steps typically performed by existing methods but ommited by RIBO-former.
+**Note:** striked-through text refers to steps typically performed by existing methods but ommited by RiboTIE.
 
 Fine-tuning is important as ribosome profiling data has shown to be highly variable between experiments, with biological variability (tissues, sample age, ...) and technical variability (lab protocol, machine calibration, ...) playing a role.
-RIBO-former is trained and fine-tuned using a set of canonical coding sequences. This approach does not prevent the trained model to find non-canonical ORFs.
+RiboTIE is trained and fine-tuned using a set of canonical coding sequences. This approach does not prevent the trained model to find non-canonical ORFs.
 The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
 No additional post-processing steps are performed.
 From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
@@ -155,13 +156,13 @@ This technique was shown to substantially outperform previous methods. We hypoth
 - elegant approach with very few custom hardcoded rules for data (pre-)processing or selection.
 - use of a state-of-the-art machine learning tools (transformer networks), which are perfectly suited for the data type (a variable number of input vectors). 
 
-## How can RIBO-former improve?
+## How can RiboTIE improve?
 
 This list is non-exhaustive, but rather lists low-hanging fruit. 
 
 ### Calibration
 
-In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RIBO-former therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned, where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
+In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RiboTIE therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned, where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
 
 **Objective**: Apply calibration steps that seeks to improve the creation of a merged ranking when combining multiple sets of predictions from different folds of the data.
 
@@ -169,9 +170,9 @@ In line with good machine learning practice, models are not used to obtain predi
 
 ### Near-miss identifier
 
-RIBO-former, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
+RiboTIE, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
 
-It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RIBO-former is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
 
 ## ✔️ Roadmap
 
