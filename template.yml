@@ -19,7 +19,7 @@ h5_path : GRCh38v110_snippet.h5
 ########################################################
 ## Out prefix for predictions, defaults to hdf5 path
 ########################################################
-# out_prefix : riboformer/template
+out_prefix : out/
 #
 ####################
 ## ADVANCED SETUP ##
@@ -37,10 +37,9 @@ h5_path : GRCh38v110_snippet.h5
 #  - SRR000003
 #
 ## example: SRR000001 and SRR000002 are merged (replicates)
-ribo:
-  - - SRR000001
-    - SRR000002
-    - SRR000003
+#ribo:
+#  - - SRR000001
+#    - SRR000002
 #
 ########################################################
 ## Training times can be sped up by removing transcripts
