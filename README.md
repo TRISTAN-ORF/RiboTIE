@@ -26,21 +26,24 @@ Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transforme
 
 ## 📖 User guide
 
-Following are the instructions on how to set up RiboTIE and pre-process data.
+### System Requirements
+Following are the instructions on how to set up RiboTIE and pre-process data. RiboTIE is a deep learning framework that requires use of a single GPU with CUDA support . All software runs on packages installed through Python
 
 ### Installation
 
 `PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch` first. GPU support is necessary.
 
-After installing `PyTorch`, run
+After installing `PyTorch`, install the `transcript_transformer` packages through PyPI by running
 
 ```bash
 pip install transcript_transformer
 ```
 
+Installation should take no longer than a couple of minutes.
+
 ### Usage
 
-Before running the tool, a dictionary file (YAML) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
+Before running the tool, a dictionary file (yaml) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
 
 - a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
 - ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
@@ -76,7 +79,7 @@ A pre-trained model is used as this improves performances while drastically redu
 
 To run RiboTIE:
 ```bash
-riboformer yaml_file.yml
+riboformer template.yml
 ```
 
 For more information about various other options, try:
@@ -88,35 +91,29 @@ riboformer -h
 Parsing data can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
-riboformer yaml_file.yml --data
+riboformer template.yml --data
 ```
 
 Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
 
-### Parsing results
+### Results
 
-RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (`*.csv`) for further evaluation. By default, for the result table, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)) . 
+RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (both `*.csv` and `*.gtf`) for further evaluation. The following parameters determine the results included in the output table, the default parameters are our recommendations:
 
-It is possible to set the number of highest predictions within the result table or adjust near-miss corrections.
-This can furthermore be achieved without re-running previous steps (i.e., when `*.npy` files have been generated).
+`--prob_cutoff` (default=0.15) : The model output threshold with which to determine the positive set. This value can be reduced to include more results.
+`--start_codons` (default="\*TG") : Regular expression denoting valid start codons. If all start are viable, use "*".
+`--min_ORF_len` (default=15) : Minimum nucleotide length of predicted translated ORF.
+`--include_invalid_TTS` (default=False) : Include ORFs with no valid stop codon.
 
-e.g., create result tables without applying near-miss correction:
+To adjust the outputs after having run RiboTIE, make sure to re-run the code with the `--results` flag to prevent the software from re-processing the samples from scratch. For more steps, we include a plethora of metadata in the output tables that can be used to filter against (e.g., `ORF_type`, `tr_support_lvl`, `tr_biotype`, ...). 
+
+In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)). 
+
+Example: create result tables without applying near-miss correction:
 
 ```bash
 riboformer yaml_file.yml --results --no-correction
 ```
-
-### Evaluating results
-
-The result table returned by RiboTIE contains a large number of the highest ranking predictions. When applying results for downstream processing, I recommend the following conditions for filtering down the results:
-
-- the model output (`output`) is larger than 0.15
-- start codons (`start_codon`) are near-cognate (*TG)
-- a valid translation termination site (`TTS_on_transcript`) is present on transcript
-
-Of course, based on the study objective, custom conditions might be required. 
-
-Several plot functions are currently being developped that will give a visual exploration of the results.
 
 ## pre-trained models
 
