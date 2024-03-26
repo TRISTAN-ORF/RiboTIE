@@ -170,14 +170,14 @@ It is observed that, for transcripts featuring fewer mapped reads around the tra
 - [x] Process transcriptome features
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
-- [ ] Post-processing features
+- [x] Post-processing features
     - [x] Result table (top predictions)
-    - [ ] Calibrate predictions from different folds/models
+    - [x] GTF formated results
     - [x] Assess near-miss predictions
 - [ ] Usability
     - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
     - [x] User-defined filtering
-    - [ ] User-defined output formatting
+    - [x] User-defined output formatting
     - [ ] Pre-training models on custom sets of data
 - [x] Wrap it: 
     - [x] Single pip package
