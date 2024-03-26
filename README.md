@@ -98,14 +98,14 @@ Once completed, the tool will automatically skip to the fine-tuning and predicti
 
 ### Results
 
-RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (both `*.csv` and `*.gtf`) for further evaluation. The following parameters determine the results included in the output table, the default parameters are our recommendations:
+RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (both `*.csv` and `*.gtf`) for further evaluation. Different flags are available to filter down the results in the output table:
 
-`--prob_cutoff` (default=0.15) : The model output threshold with which to determine the positive set. This value can be reduced to include more results.
-`--start_codons` (default="\*TG") : Regular expression denoting valid start codons. If all start are viable, use "*".
-`--min_ORF_len` (default=15) : Minimum nucleotide length of predicted translated ORF.
-`--include_invalid_TTS` (default=False) : Include ORFs with no valid stop codon.
+- `--prob_cutoff` (default=0.15) : The model output threshold with which to determine the positive set.
+- `--start_codons` (default="\*TG") : Regular expression denoting valid start codons. If all start are viable, use "*".
+- `--min_ORF_len` (default=15) : Minimum nucleotide length of predicted translated ORF.
+- `--include_invalid_TTS` (default=False) : Include ORFs with no valid stop codon.
 
-To adjust the outputs after having run RiboTIE, make sure to re-run the code with the `--results` flag to prevent the software from re-processing the samples from scratch. For more steps, we include a plethora of metadata in the output tables that can be used to filter against (e.g., `ORF_type`, `tr_support_lvl`, `tr_biotype`, ...). 
+The default parameters are our recommendations. To adjust the outputs after having run RiboTIE, make sure to re-run the code with the `--results` flag to prevent the software from re-processing the samples from scratch. For more steps, we include a plethora of metadata in the output tables that can be used to filter against (e.g., `ORF_type`, `tr_support_lvl`, `tr_biotype`, ...). 
 
 In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)). 
 
