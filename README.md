@@ -175,10 +175,11 @@ It is observed that, for transcripts featuring fewer mapped reads around the tra
     - [x] GTF formated results
     - [x] Assess near-miss predictions
 - [ ] Usability
-    - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
     - [x] User-defined filtering
     - [x] User-defined output formatting
-    - [ ] Pre-training models on custom sets of data
+    - [ ] Pre-train models on custom sets of data
+    - [ ] Deploy custom pre-trained models on data
+    - [ ] Include TIS transformer predictions
 - [x] Wrap it: 
     - [x] Single pip package
     - [x] Simplify README
