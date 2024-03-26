@@ -109,12 +109,6 @@ The default parameters are our recommendations. To adjust the outputs after havi
 
 In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)). 
 
-Example: create result tables without applying near-miss correction:
-
-```bash
-riboformer yaml_file.yml --results --no-correction
-```
-
 ## pre-trained models
 
 Currently, only a single set of pre-trained models is available: `50perc_06_23.ckpt`. This model is selected by default.
