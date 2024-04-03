@@ -94,7 +94,7 @@ Parsing data can be achieved without doing fine-tuning and prediction by running
 riboformer template.yml --data
 ```
 
-Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
+Once completed, the tool will automatically start at the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
 
 ### Results
 
@@ -139,7 +139,6 @@ RiboTIE is trained and fine-tuned using a set of canonical coding sequences. Thi
 The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
 No additional post-processing steps are performed.
 From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
-No filtering is applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
 
 This technique was shown to substantially outperform previous methods. We hypothesize this gain to be achieved through various factors:
 - fine-tuning on each data set, the model learns custom rules present for each data set
