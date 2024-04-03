@@ -14,7 +14,7 @@
 ## 📋 About
 **Note that RiboTIE was formerly known as RIBO-former.** Changes in naming are ongoing.
 
-[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
+[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to detect translated ORFs using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/jdcla/RIBO_former_paper).
 
