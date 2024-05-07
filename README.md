@@ -4,9 +4,9 @@
 *Driving coding sequence discovery since 2023*
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8059764.svg)](https://doi.org/10.5281/zenodo.8059764)
-[![GitHub license](https://img.shields.io/github/license/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/blob/main/LICENSE.md)
-[![GitHub issues](https://img.shields.io/github/issues/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/issues)
-[![GitHub stars](https://img.shields.io/github/stars/jdcla/RIBO_former)](https://github.com/jdcla/RIBO_former/stargazers)
+[![GitHub license](https://img.shields.io/github/license/TRISTAN-ORF/RIBO_former)](https://github.com/TRISTAN-ORF/RIBO_former/blob/main/LICENSE.md)
+[![GitHub issues](https://img.shields.io/github/issues/TRISTAN-ORF/RIBO_former)](https://github.com/TRISTAN-ORF/RIBO_former/issues)
+[![GitHub stars](https://img.shields.io/github/stars/TRISTAN-ORF/RIBO_former)](https://github.com/TRISTAN-ORF/RIBO_former/stargazers)
 
 
 </div>
@@ -16,11 +16,11 @@
 
 [RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to detect translated ORFs using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
-The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/jdcla/RIBO_former_paper).
+The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RIBO_former_paper).
 
-When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/jdcla/transcript_transformer),  created in support of RiboTIE. 
+When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/TRISTAN-ORF/transcript_transformer),  created in support of RiboTIE. 
 
-Make sure to check out [TIS Transformer](https://github.com/jdcla/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
+Make sure to check out [TIS Transformer](https://github.com/TRISTAN-ORF/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
 
 
 
@@ -107,7 +107,7 @@ RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.np
 
 The default parameters are our recommendations. To adjust the outputs after having run RiboTIE, make sure to re-run the code with the `--results` flag to prevent the software from re-processing the samples from scratch. For more steps, we include a plethora of metadata in the output tables that can be used to filter against (e.g., `ORF_type`, `tr_support_lvl`, `tr_biotype`, ...). 
 
-In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/jdcla/RIBO_former/blob/main/README.md#near-miss-identifier)). 
+In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/TRISTAN-ORF/RIBO_former/blob/main/README.md#near-miss-identifier)). 
 
 ## pre-trained models
 
@@ -129,7 +129,7 @@ See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1
 Essentially, RiboTIE works by detecting translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. RiboTIE similarly returns predictions for each position on each transcript.
 
 <div align="center">
-<img src="https://github.com/jdcla/RIBO_former/raw/main/ribo_intro.png" width="800">
+<img src="https://github.com/TRISTAN-ORF/RIBO_former/raw/main/ribo_intro.png" width="800">
 </div>
 
 **Note:** striked-through text refers to steps typically performed by existing methods but ommited by RiboTIE.
