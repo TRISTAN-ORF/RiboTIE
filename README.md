@@ -16,7 +16,7 @@
 
 [RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to detect translated ORFs using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
-The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RiboTIE_paper).
+The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RiboTIE_article).
 
 When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/TRISTAN-ORF/transcript_transformer),  created in support of RiboTIE. 
 
