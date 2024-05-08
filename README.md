@@ -147,7 +147,7 @@ ribotie template.yml --pretrain
 The following functions are performed:
 1. RiboTIE divides the transcripts by seqname into training, validation and test sets using two folds. The test sets cover the full transcriptome (50% in each fold). The test set is not used during training or selection of the final models.
 2. RiboTIE combines all listed samples (`--samples`) into a single training, validation and test set for each fold/model.
-3. After optimization, RiboTIE saves the weights of the models (`.ckpt`) as `{out_prefix}pretrain_f1.ckpt` and `{out_prefix}pretrain_f2.ckpt`. It also creates a `yaml` output file (under `{out_prefix}pretrain.ckpt`), which contains all ribotie arguments required to apply these newly pretrained models.
+3. After optimization, RiboTIE saves the weights of the models (`.ckpt`) as `{out_prefix}pretrain_f1.ckpt` and `{out_prefix}pretrain_f2.ckpt`. It also creates a `yaml` output file (under `{out_prefix}pretrain.yml`), which contains all ribotie arguments required to apply these newly pretrained models.
 
 To run RiboTIE using custom pre-trained models:
 
