@@ -14,7 +14,7 @@
 ## 📋 About
 **Note that RiboTIE was formerly known as RIBO-former.** Changes in naming are ongoing.
 
-[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to detect translated ORFs using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
+[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RiboTIE_article).
 
@@ -26,30 +26,23 @@ Make sure to check out [TIS Transformer](https://github.com/TRISTAN-ORF/TIS_tran
 
 ## 📖 User guide
 
-### System Requirements
-Following are the instructions on how to set up RiboTIE and pre-process data. RiboTIE is a deep learning framework that requires use of a single GPU with CUDA support . All software runs on packages installed through Python
+Following are the instructions on how to set up RiboTIE and pre-process data.
 
 ### Installation
 
 `PyTorch` is used as the deep learning library. Follow the instructions [here](https://pytorch.org/get-started/locally/) to install `PyTorch` first. GPU support is necessary.
 
-After installing `PyTorch`, install the `transcript_transformer` packages through PyPI by running
+After installing `PyTorch`, run
 
 ```bash
 pip install transcript_transformer
 ```
 
-Installation should take no longer than a couple of minutes.
-
 ### Usage
 
-<<<<<<< HEAD
-Before running the tool, a dictionary file (yaml) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
-=======
 > Note that all commands listed here can be executed within the directory after cloning the repository
 
-Dictionary files (YAML) are the recommended approach to pass arguments to the tool. It is possible to list multiple configuration files. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
->>>>>>> prep for v0.8
+Dictionary files (YAML/JSON) are the recommended approach to pass arguments to the tool. It is possible to list multiple configuration files. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
 
 - a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
 - ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
@@ -77,7 +70,7 @@ When running RiboTIE, the following steps are performed:
 
 subsequently, for every data set in `ribo_paths`:
 
-2. Fine-tune pre-trained models on non-overlapping folds of the data. 
+2. Fine-tune pre-trained models on non-overlapping folds of the data.
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
 
@@ -85,11 +78,7 @@ RiboTIE finetunes a pre-trained model on individual samples as this was shown to
 
 To run RiboTIE on some test data, clone this repository and run:
 ```bash
-<<<<<<< HEAD
-riboformer template.yml
-=======
 ribotie template.yml
->>>>>>> prep for v0.8
 ```
 
 For more information about various other options, try:
@@ -101,12 +90,6 @@ ribotie -h
 Parsing data can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
-<<<<<<< HEAD
-riboformer template.yml --data
-```
-
-Once completed, the tool will automatically start at the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
-=======
 ribotie template.yml --data
 ```
 
@@ -134,33 +117,15 @@ For example: to include all start codons:
 ```bash
 ribotie yaml_file.yml --results --start_codons ".*"
 ```
->>>>>>> prep for v0.8
 
-### Results
+### Evaluating results
 
-<<<<<<< HEAD
-RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (both `*.csv` and `*.gtf`) for further evaluation. Different flags are available to filter down the results in the output table:
-
-- `--prob_cutoff` (default=0.15) : The model output threshold with which to determine the positive set.
-- `--start_codons` (default="\*TG") : Regular expression denoting valid start codons. If all start are viable, use "*".
-- `--min_ORF_len` (default=15) : Minimum nucleotide length of predicted translated ORF.
-- `--include_invalid_TTS` (default=False) : Include ORFs with no valid stop codon.
-
-The default parameters are our recommendations. To adjust the outputs after having run RiboTIE, make sure to re-run the code with the `--results` flag to prevent the software from re-processing the samples from scratch. For more steps, we include a plethora of metadata in the output tables that can be used to filter against (e.g., `ORF_type`, `tr_support_lvl`, `tr_biotype`, ...). 
-
-In addition to some basic filtering of ORFs, sites with near-miss predictions are corrected ([explanation](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier)). 
-
-## pre-trained models
-
-Currently, only a single set of pre-trained models is available: `50perc_06_23.ckpt`. This model is selected by default.
-=======
 RiboTIE know generates several report files that are automatically detected by MultiQC and displayed when running it in a parent directory.
 
 ## Pre-trained models
 
 
 Currently, a single set of pre-trained models is available which can be used for human ribosome profiling data. This model is the selected one by default.
->>>>>>> prep for v0.8
 The models are pre-trained on non-overlapping parts of the transcriptome, using the data featured by SRR592960, SRR1562539, SRR1573939, SRR1610244, SRR1976443, SRR2536856, SRR2873532, SRR3575904.
 
 |        |  Train                  | Validation | Applied on                    |
@@ -208,6 +173,7 @@ RiboTIE is trained and fine-tuned using a set of canonical coding sequences. Thi
 The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
 No additional post-processing steps are performed.
 From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
+No filtering is applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
 
 This technique was shown to substantially outperform previous methods. We hypothesize this gain to be achieved through various factors:
 - fine-tuning on each data set, the model learns custom rules present for each data set
@@ -228,16 +194,15 @@ It is observed that, for transcripts featuring fewer mapped reads around the tra
 - [x] Process transcriptome features
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
-- [x] Post-processing features
+- [ ] Post-processing features
     - [x] Result table (top predictions)
-    - [x] GTF formated results
+    - [ ] Calibrate predictions from different folds/models
     - [x] Assess near-miss predictions
 - [ ] Usability
+    - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
     - [x] User-defined filtering
-    - [x] User-defined output formatting
-    - [ ] Pre-train models on custom sets of data
-    - [ ] Deploy custom pre-trained models on data
-    - [ ] Include TIS transformer predictions
+    - [ ] User-defined output formatting
+    - [ ] Pre-training models on custom sets of data
 - [x] Wrap it: 
     - [x] Single pip package
     - [x] Simplify README
