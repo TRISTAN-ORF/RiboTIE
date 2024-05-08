@@ -14,7 +14,7 @@
 ## 📋 About
 **Note that RiboTIE was formerly known as RIBO-former.** Changes in naming are ongoing.
 
-[RiboTIE](https://doi.org/10.1101/2023.06.20.545724) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
+[RiboTIE](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RiboTIE_article).
 
@@ -122,7 +122,7 @@ ribotie yaml_file.yml --results --start_codons ".*"
 
 RiboTIE know generates several report files that are automatically detected by MultiQC and displayed when running it in a parent directory.
 
-## Pre-trained models
+### Pre-trained models
 
 
 Currently, a single set of pre-trained models is available which can be used for human ribosome profiling data. This model is the selected one by default.
@@ -136,7 +136,7 @@ Listed identifiers refer to chromosomes.
 
 Adding the ability to create custom pre-trained models through the `ribotie` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
 
-## Pre-training models 
+### Pre-training models 
 
 It is possible to pre-train custom models. This is highly recommended when no pre-trained models are available (e.g., new organisms). If your study includes multiple samples, it is possible pre-train models on all samples before the fine-tuning step.  Note that two models are optimized to ensure no unforeseen biases are introduced by training or selecting (validation set) models on identical genomic regions they are providing predictions for (also dubbed test set). 
 
@@ -157,10 +157,10 @@ ribotie template.yml out_test/pretrain.yml
 
 Note that RiboTIE supports using multiple separate configuration files (the order is not important). By default, RiboTIE will determine the directory path of the configuration file listing the pre-trained model to search for the model dictionary (`.ckpt`). Both files can be moved together to a new directory if desired. 
 
-## How does RiboTIE work?
+## 🤨 How does RiboTIE work?
 
 See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1) for a detailed description.
-Essentially, RiboTIE works by detecting translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. RiboTIE similarly returns predictions for each position on each transcript.
+RiboTIE detects translation initiation sites using only ribosome profiling data. The tool parses information on how reads are aligned along the transcript. Specifically, for each position, a vector containing the number of reads for each read length at that position is parsed.  **No sequence information is processed**. RiboTIE similarly returns predictions for each position on each transcript. From these predictions, ORFs are derived by a greedy search algorithm that finds the first in-frame stop codon. 
 
 <div align="center">
 <img src="https://github.com/TRISTAN-ORF/RiboTIE/raw/main/ribo_intro.png" width="800">
@@ -170,7 +170,7 @@ Essentially, RiboTIE works by detecting translation initiation sites using only 
 
 Fine-tuning is important as ribosome profiling data has shown to be highly variable between experiments, with biological variability (tissues, sample age, ...) and technical variability (lab protocol, machine calibration, ...) playing a role.
 RiboTIE is trained and fine-tuned using a set of canonical coding sequences. This approach does not prevent the trained model to find non-canonical ORFs.
-The script simply returns the top ranking predictions of the full set of predictions evaluated on each position of each transcript. 
+After fine-tuning, the model provides predictions for each  position of each transcript. 
 No additional post-processing steps are performed.
 From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
 No filtering is applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
@@ -181,7 +181,7 @@ This technique was shown to substantially outperform previous methods. We hypoth
 - elegant approach with very few custom hardcoded rules for data (pre-)processing or selection.
 - use of a state-of-the-art machine learning tools (transformer networks), which are perfectly suited for the data type (a variable number of input vectors). 
 
-## How RiboTIE predictions are improved
+## (optional) Post-processing steps that correct RiboTIE predictions
 
 ### Near-miss identifier
 
@@ -189,20 +189,32 @@ RiboTIE, unlike previous tools processing ribosome profiling data, does not crea
 
 It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
 
+## ⁉️ FAQ
+
+**Will training and selecting models on canonical coding sequences limit the ability of RiboTIE to detect non-canonical ORFs?**
+
+RiboTIE has been trained only on ribosome sequencing data to prevent the model from relying on ORF metadata or codon information, from which the length of ORFs is easily derived. 
+As such, RiboTIE would only be biased against detecting TISs of shorter ORFs if the distribution of ribosome protected fragments is distinctly different from that of canonincal coding sequences, for which there exists no proof today. 
+This statement is reflected by our benchmark of RiboTIE against other existing tools, where the discovery rate of short canonical CDSs (<300nt) by RiboTIE was at least 400% higher than any other tool [main manuscript; Fig 1C](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1). 
+
+
+
+
 ## ✔️ Roadmap
 
 - [x] Process transcriptome features
 - [x] Process ribosome profiling data
 - [x] Set-up data format for model training/prediction
-- [ ] Post-processing features
+- [x] Post-processing features
     - [x] Result table (top predictions)
-    - [ ] Calibrate predictions from different folds/models
     - [x] Assess near-miss predictions
 - [ ] Usability
-    - [ ] Allow pre-trained model on non-human data (detect and split new seqnames evenly in folds)
     - [x] User-defined filtering
-    - [ ] User-defined output formatting
-    - [ ] Pre-training models on custom sets of data
+    - [ ] User-defined output data
+        - [x] csv file (containing ORF/transcript/gene metadata)
+        - [x] gtf file (containing ORFs called as being translated)
+        - [ ] fasta file (containing ORFs sequences)
+    - [x] Support pre-training models on custom sets of data
 - [x] Wrap it: 
     - [x] Single pip package
     - [x] Simplify README
