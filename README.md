@@ -43,7 +43,13 @@ Installation should take no longer than a couple of minutes.
 
 ### Usage
 
+<<<<<<< HEAD
 Before running the tool, a dictionary file (yaml) needs to exist that points towards all the input data used. In addition, this file specifies how data is used to train and evaluate riboformer models. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
+=======
+> Note that all commands listed here can be executed within the directory after cloning the repository
+
+Dictionary files (YAML) are the recommended approach to pass arguments to the tool. It is possible to list multiple configuration files. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
+>>>>>>> prep for v0.8
 
 - a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
 - ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
@@ -75,29 +81,64 @@ subsequently, for every data set in `ribo_paths`:
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
 
-A pre-trained model is used as this improves performances while drastically reducing computational resources required for the fine-tuning as compared to training models from scratch.
+RiboTIE finetunes a pre-trained model on individual samples as this was shown to improve performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. See "Pre-training a custom model" for instructions on how to pre-train a custom model. e.g., to apply RiboTIE on other species. 
 
-To run RiboTIE:
+To run RiboTIE on some test data, clone this repository and run:
 ```bash
+<<<<<<< HEAD
 riboformer template.yml
+=======
+ribotie template.yml
+>>>>>>> prep for v0.8
 ```
 
 For more information about various other options, try:
 ```bash
-riboformer -h
+ribotie -h
 ```
 
 ### Parsing data
 Parsing data can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
+<<<<<<< HEAD
 riboformer template.yml --data
 ```
 
 Once completed, the tool will automatically start at the fine-tuning and prediction steps when re-running the script (i.e., `riboformer yaml_file.yml`), as the data is detected within the `h5` database.
+=======
+ribotie template.yml --data
+```
+
+Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `ribotie yaml_file.yml`), as the data is detected within the `hdf5` database.
+
+### Parsing the predictions 
+
+RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). It is not feasible or of interest to provide information on the millions of predictions.
+Therefore, RiboTIE collects metadata for predictions meeting several criteria. For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
+
+By default, included predictions are filtered on:
+
+- the model output (`output`) is larger than 0.15
+- start codons (`start_codon`) are near-cognate (*TG)
+- a valid translation termination site (`TTS_on_transcript`) is present on transcript
+
+Additionally, sites with near-miss predictions are corrected ([explanation](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier)).
+
+**NOTE: the output `.csv`/`.gff` files are generated from the full set of predictions on the transcriptome (within the `.npy` files). The RiboTIE model should not be fine-tuned again when creating new result tables (Use the `--results` flag!)** 
+
+It is possible to alter the conditions used to generate the final results.
+
+For example: to include all start codons:
+
+```bash
+ribotie yaml_file.yml --results --start_codons ".*"
+```
+>>>>>>> prep for v0.8
 
 ### Results
 
+<<<<<<< HEAD
 RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). In addition, RiboTIE collects metadata for the top results within a result table (both `*.csv` and `*.gtf`) for further evaluation. Different flags are available to filter down the results in the output table:
 
 - `--prob_cutoff` (default=0.15) : The model output threshold with which to determine the positive set.
@@ -112,6 +153,14 @@ In addition to some basic filtering of ORFs, sites with near-miss predictions ar
 ## pre-trained models
 
 Currently, only a single set of pre-trained models is available: `50perc_06_23.ckpt`. This model is selected by default.
+=======
+RiboTIE know generates several report files that are automatically detected by MultiQC and displayed when running it in a parent directory.
+
+## Pre-trained models
+
+
+Currently, a single set of pre-trained models is available which can be used for human ribosome profiling data. This model is the selected one by default.
+>>>>>>> prep for v0.8
 The models are pre-trained on non-overlapping parts of the transcriptome, using the data featured by SRR592960, SRR1562539, SRR1573939, SRR1610244, SRR1976443, SRR2536856, SRR2873532, SRR3575904.
 
 |        |  Train                  | Validation | Applied on                    |
@@ -120,8 +169,28 @@ The models are pre-trained on non-overlapping parts of the transcriptome, using 
 | Fold 2 |  2, 6, 8, 10, 14, 16, 18, 22, Y | 4, 12, 20    | 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, X  |
 Listed identifiers refer to chromosomes.
 
-Adding the ability to create custom pre-trained models through the `riboformer` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
+Adding the ability to create custom pre-trained models through the `ribotie` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
 
+## Pre-training models 
+
+It is possible to pre-train custom models. This is highly recommended when no pre-trained models are available (e.g., new organisms). If your study includes multiple samples, it is possible pre-train models on all samples before the fine-tuning step.  Note that two models are optimized to ensure no unforeseen biases are introduced by training or selecting (validation set) models on identical genomic regions they are providing predictions for (also dubbed test set). 
+
+```bash
+ribotie template.yml --pretrain
+```
+
+The following functions are performed:
+1. RiboTIE divides the transcripts by seqname into training, validation and test sets using two folds. The test sets cover the full transcriptome (50% in each fold). The test set is not used during training or selection of the final models.
+2. RiboTIE combines all listed samples (`--samples`) into a single training, validation and test set for each fold/model.
+3. After optimization, RiboTIE saves the weights of the models (`.ckpt`) as `{out_prefix}pretrain_f1.ckpt` and `{out_prefix}pretrain_f2.ckpt`. It also creates a `yaml` output file (under `{out_prefix}pretrain.ckpt`), which contains all ribotie arguments required to apply these newly pretrained models.
+
+To run RiboTIE using custom pre-trained models:
+
+```bash
+ribotie template.yml out_test/pretrain.yml
+```
+
+Note that RiboTIE supports using multiple separate configuration files (the order is not important). By default, RiboTIE will determine the directory path of the configuration file listing the pre-trained model to search for the model dictionary (`.ckpt`). Both files can be moved together to a new directory if desired. 
 
 ## How does RiboTIE work?
 
@@ -146,17 +215,7 @@ This technique was shown to substantially outperform previous methods. We hypoth
 - elegant approach with very few custom hardcoded rules for data (pre-)processing or selection.
 - use of a state-of-the-art machine learning tools (transformer networks), which are perfectly suited for the data type (a variable number of input vectors). 
 
-## How can RiboTIE improve?
-
-This list is non-exhaustive, but rather lists low-hanging fruit. 
-
-### Calibration
-
-In line with good machine learning practice, models are not used to obtain predictions on data it is trained on. RiboTIE therefore trains/fine-tunes multiple models on non-overlapping folds of the transcriptome. Predictions over the full transcriptome are gathered by simply merging the outputs of both models. As post-processing and filtering of sites of interest is done on a rank-based merit, this technique is not optimal. In other words, the output distributions are not necessarily aligned, where an output of 0.6 for one model is *as significant* as a 0.6 for the other model (for two-fold approaches).
-
-**Objective**: Apply calibration steps that seeks to improve the creation of a merged ranking when combining multiple sets of predictions from different folds of the data.
-
-**Note:** evaluating PR/ROC AUC of the independent sets and the combined set showed only a very slight decline in performance (~1%). At this point, no time has been invested to address this issue.
+## How RiboTIE predictions are improved
 
 ### Near-miss identifier
 

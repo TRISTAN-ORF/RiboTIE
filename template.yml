@@ -9,9 +9,9 @@ fa_path : test/GRCh38v110_snippet.fa
 ## DO NOT change id after data is parsed to h5 file
 ########################################################
 ribo_paths :
-  SRR000001 : test/SRR000001.sam
-  SRR000002 : test/SRR000002.sam
-  SRR000003 : test/SRR000003.sam
+  sample_1 : test/SRR000001.sam
+  sample_2 : test/SRR000002.sam
+  sample_3 : test/SRR000003.sam
 ########################################################
 ## path to hdf5 database created to store data.
 ########################################################
@@ -19,7 +19,7 @@ h5_path : GRCh38v110_snippet.h5
 ########################################################
 ## Out prefix for predictions, defaults to hdf5 path
 ########################################################
-out_prefix : out/
+out_prefix : test_out/
 #
 ####################
 ## ADVANCED SETUP ##
@@ -31,15 +31,15 @@ out_prefix : out/
 ## Replicates can be merged where the number of mapped 
 ## reads are summed for multiple experiments. 
 ########################################################
-## example: only use SRR000001 and SRR000003
-#ribo:
-#  - SRR000001
-#  - SRR000003
+## example: only use sample_1 and sample_3
+samples:
+  - sample_1
+  - sample_3
 #
-## example: SRR000001 and SRR000002 are merged (replicates)
+## example: sample_1 and sample_2 are merged (replicates)
 #ribo:
-#  - - SRR000001
-#    - SRR000002
+#  - - sample_1
+#    - sample_2
 #
 ########################################################
 ## Training times can be sped up by removing transcripts
@@ -58,6 +58,6 @@ cond :
 #cond :
 #  ribo:
 #    num_reads : 
-#      SRR000001 : "x > 10"
-#      SRR000002 : "x > 0"
-#      SRR000003 : "x > 0"
+#      sample_1 : "x > 10"
+#      sample_2 : "x > 0"
+#      sample_3 : "x > 0"
