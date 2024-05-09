@@ -194,7 +194,7 @@ rule ribotie_parse_riboseq_samples:
         "test_out/{sample}.npy"
     shell:
         """
-        ribotie template.yml --samples {wildcards.sample}
+        ribotie template.yml --samples [{wildcards.sample}]
         """
 
 ```
