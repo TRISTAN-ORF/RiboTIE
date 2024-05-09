@@ -37,7 +37,7 @@ samples:
   - sample_3
 #
 ## example: sample_1 and sample_2 are merged (replicates)
-#ribo:
+#samples:
 #  - - sample_1
 #    - sample_2
 #

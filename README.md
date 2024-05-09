@@ -12,9 +12,8 @@
 </div>
 
 ## 📋 About
-**Note that RiboTIE was formerly known as RIBO-former.** Changes in naming are ongoing.
 
-[RiboTIE](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1) is created to annotate translation initiation sites on transcripts using ribosome profiling data. This repository contains the instructions to run RiboTIE on custom data.
+[RiboTIE](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1) is created to find translated ORFs on transcripts using ribosome profiling data. RiboTIE achieves state-of-the-art results independent of the lab protocol (e.g., translation blockers) applied to create the ribosome profiling database. This repository contains the instructions to run RiboTIE on custom data.
 
 The data, model parameters, and benchmark data from **the article** are featured in a [separate repository](https://github.com/TRISTAN-ORF/RiboTIE_article).
 
@@ -40,9 +39,9 @@ pip install transcript_transformer
 
 ### Usage
 
-> Note that all commands listed here can be executed within the directory after cloning the repository
+**All commands listed here can be executed within this repository.**
 
-Dictionary files (YAML/JSON) are the recommended approach to pass arguments to the tool. It is possible to list multiple configuration files. Inspect `template.yml` to evaluate all available options. see `test/` for example inputs. Required are:
+Dictionary files (YAML/JSON) are the recommended approach to pass arguments to the tool. It is possible to list multiple configuration files. Inspect `template.yml` and `ribotie -h` to evaluate all available options. see `test/` for example inputs. Required are:
 
 - a **genome-level** reference and assembly file (`*.gtf`, `*.fa`)
 - ribosome profiling reads (`*.sam`/`*.bam`) **mapped to the transcriptome**
@@ -74,7 +73,7 @@ subsequently, for every data set in `ribo_paths`:
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
 
-RiboTIE finetunes a pre-trained model on individual samples as this was shown to improve performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. See "Pre-training a custom model" for instructions on how to pre-train a custom model. e.g., to apply RiboTIE on other species. 
+RiboTIE finetunes a pre-trained model on individual samples as this improves performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. See "Pre-training models" for instructions on how to pre-train a custom model. e.g., to apply RiboTIE on other species. 
 
 To run RiboTIE on some test data, clone this repository and run:
 ```bash
@@ -87,18 +86,18 @@ ribotie -h
 ```
 
 ### Parsing data
-Parsing data can be achieved without doing fine-tuning and prediction by running:
+Parsing the data within the `hdf5` database can be achieved without doing fine-tuning and prediction by running:
 
 ```bash
 ribotie template.yml --data
 ```
 
-Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `ribotie yaml_file.yml`), as the data is detected within the `hdf5` database.
+Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `ribotie template.yml`), as the data is detected within the `hdf5` database.
 
 ### Parsing the predictions 
 
-RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). It is not feasible or of interest to provide information on the millions of predictions.
-Therefore, RiboTIE collects metadata for predictions meeting several criteria. For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
+RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). It is not feasible or of interest to provide information on the millions of predictions available.
+Therefore, RiboTIE only collects metadata for predictions meeting the listed criteria. For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
 
 By default, included predictions are filtered on:
 
@@ -112,7 +111,7 @@ Additionally, sites with near-miss predictions are corrected ([explanation](http
 
 It is possible to alter the conditions used to generate the final results.
 
-For example: to include all start codons:
+For example: get the result tables where all start codons are included:
 
 ```bash
 ribotie yaml_file.yml --results --start_codons ".*"
@@ -120,7 +119,7 @@ ribotie yaml_file.yml --results --start_codons ".*"
 
 ### Evaluating results
 
-RiboTIE know generates several report files that are automatically detected by MultiQC and displayed when running it in a parent directory.
+RiboTIE now generates several report files that are automatically detected by MultiQC and displayed when running it in a parent directory.
 
 ### Pre-trained models
 
@@ -134,20 +133,18 @@ The models are pre-trained on non-overlapping parts of the transcriptome, using 
 | Fold 2 |  2, 6, 8, 10, 14, 16, 18, 22, Y | 4, 12, 20    | 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, X  |
 Listed identifiers refer to chromosomes.
 
-Adding the ability to create custom pre-trained models through the `ribotie` script is planned for the future. This can already be achieved when running your full scripts through functionalities within the `transcript-transformer` package.
-
 ### Pre-training models 
 
-It is possible to pre-train custom models. This is highly recommended when no pre-trained models are available (e.g., new organisms). If your study includes multiple samples, it is possible pre-train models on all samples before the fine-tuning step.  Note that two models are optimized to ensure no unforeseen biases are introduced by training or selecting (validation set) models on identical genomic regions they are providing predictions for (also dubbed test set). 
+It is possible to pre-train custom models. This is highly recommended when pre-trained models are not available (e.g., new organisms). If your study includes multiple samples, it is possible pre-train models on all samples before the fine-tuning step.  Note that two models are optimized to ensure no unforeseen biases are introduced by training or selecting (validation set) models on identical genomic regions they are providing predictions for (also dubbed test set). 
 
 ```bash
 ribotie template.yml --pretrain
 ```
 
-The following functions are performed:
+The following steps are performed:
 1. RiboTIE divides the transcripts by seqname into training, validation and test sets using two folds. The test sets cover the full transcriptome (50% in each fold). The test set is not used during training or selection of the final models.
 2. RiboTIE combines all listed samples (`--samples`) into a single training, validation and test set for each fold/model.
-3. After optimization, RiboTIE saves the weights of the models (`.ckpt`) as `{out_prefix}pretrain_f1.ckpt` and `{out_prefix}pretrain_f2.ckpt`. It also creates a `yaml` output file (under `{out_prefix}pretrain.yml`), which contains all ribotie arguments required to apply these newly pretrained models.
+3. After optimization, RiboTIE saves the weights of the models (`.ckpt`) as `{out_prefix}pretrain_f1.ckpt` and `{out_prefix}pretrain_f2.ckpt`. It also creates a `yaml` output file (under `{out_prefix}pretrain.yml`), which contains all ribotie arguments required to apply these newly pretrained models, as well as the genomic regions allocated for generating the training, validation and test sets.
 
 To run RiboTIE using custom pre-trained models:
 
@@ -156,6 +153,53 @@ ribotie template.yml out_test/pretrain.yml
 ```
 
 Note that RiboTIE supports using multiple separate configuration files (the order is not important). By default, RiboTIE will determine the directory path of the configuration file listing the pre-trained model to search for the model dictionary (`.ckpt`). Both files can be moved together to a new directory if desired. 
+
+### ⚡️ Parallelization
+
+The use of a single `hdf5` database has limitations towards upscaling and parallelization of RiboTIE. While samples are processed independently, having multiple processes write and read to and from a single `hdf5` can result in I/O errors.
+
+The argument `--parallel` creates independent `hdf5` datasets for each ribo-seq sample  (`{h5_path%.h5}_{ribo_id}.h5`). This allows individual samples being processed in parallel by RiboTIE. RiboTIE still pulls data from the `hdf5` database containing the genomic features when processing the result table, so make sure these databases always exist under the same folder as defined by the `--h5_path` argument.
+
+For example, a snakemake pipeline parsing `ribo-seq` samples in parallel using RiboTIE could look like this:
+
+```python
+# from template.yml, can also be part of a snakemake configuration file
+samples = {
+    "sample_1": "test/SRR000001.sam",
+    "sample_2": "test/SRR000001.sam",
+    "sample_3": "test/SRR000001.sam"
+}
+
+rule all:
+    input:
+        expand("test_out/{sample}.npy", sample=samples.keys())
+
+# `tis_transformer --data` is called first as running multiple `ribotie` commands in parallel would result in parallel processes 
+# parsing the genome assembly features, which is only required once (and stored under `{h5_path}` and within the backup location).
+rule ribotie_parse_genomic_features:
+    input:
+        "template.yml"
+    output:
+        "GRCh38v110_snippet.h5"
+    shell:
+        """
+        tis_transformer template.yml --data
+        """
+
+rule ribotie_parse_riboseq_samples:
+    input:
+        base="GRCh38v110_snippet.h5"
+        mapped=lambda wildcards: samples[wildcards.sample]
+    output:
+        "test_out/{sample}.npy"
+    shell:
+        """
+        ribotie template.yml --samples {wildcards.sample}
+        """
+
+```
+
+> Note that if a variable is defined both within yaml configuration file and a bash argument (e.g. `--samples`), the latter (i.e., bash arguments) will overwrite the former.  
 
 ## 🤨 How does RiboTIE work?
 
@@ -211,10 +255,11 @@ This statement is reflected by our benchmark of RiboTIE against other existing t
 - [ ] Usability
     - [x] User-defined filtering
     - [ ] User-defined output data
-        - [x] csv file (containing ORF/transcript/gene metadata)
-        - [x] gtf file (containing ORFs called as being translated)
-        - [ ] fasta file (containing ORFs sequences)
+        - [x] csv file (containing called ORF/transcript/gene metadata)
+        - [x] gtf file (containing called ORF genomic features)
+        - [ ] fasta file (containing called ORFs sequences)
     - [x] Support pre-training models on custom sets of data
+    - [x] Parallelization for use with NextFlow/Snakemake
 - [x] Wrap it: 
     - [x] Single pip package
     - [x] Simplify README
