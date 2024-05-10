@@ -174,8 +174,9 @@ rule all:
     input:
         expand("test_out/{sample}.npy", sample=samples.keys())
 
-# `tis_transformer --data` is called first as running multiple `ribotie` commands in parallel would result in parallel processes 
-# parsing the genome assembly features, which is only required once (and stored under `{h5_path}` and within the backup location).
+# `tis_transformer --data` is called first as running multiple `ribotie` commands in parallel
+# would result in parallel processes parsing the genome assembly features, which is only required
+# once (and stored under `{h5_path}` and within the backup location).
 rule ribotie_parse_genomic_features:
     input:
         "template.yml"
@@ -183,18 +184,22 @@ rule ribotie_parse_genomic_features:
         "GRCh38v110_snippet.h5"
     shell:
         """
-        tis_transformer template.yml --data
+        tis_transformer {input} --data
         """
 
+# For HPC servers, it can further be advantaguous to create an extra rule for parsing the riboseq
+# data separately using a partition that does not require GPU resources
+# e.g. `ribotie {input.config} --data --samples {wildcards.sample} --parallel`
 rule ribotie_parse_riboseq_samples:
     input:
-        base="GRCh38v110_snippet.h5"
+        config="template.yml",
+        base="GRCh38v110_snippet.h5",
         mapped=lambda wildcards: samples[wildcards.sample]
     output:
         "test_out/{sample}.npy"
     shell:
         """
-        ribotie template.yml --samples {wildcards.sample} --parallel
+        ribotie {input.config} --samples {wildcards.sample} --parallel
         """
 
 ```
