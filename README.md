@@ -109,9 +109,9 @@ Additionally, sites with near-miss predictions are corrected ([explanation](http
 
 **NOTE: the output `.csv`/`.gff` files are generated from the full set of predictions on the transcriptome (within the `.npy` files). The RiboTIE model should not be fine-tuned again when creating new result tables (Use the `--results` flag!)** 
 
-It is possible to alter the conditions used to generate the final results.
+It is possible to alter the conditions to select called ORFs when generating the metadata table.
 
-For example: get the result tables where all start codons are included:
+For example: get more metadata on the ORFs where all start codons are included:
 
 ```bash
 ribotie yaml_file.yml --results --start_codons ".*"
