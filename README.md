@@ -265,6 +265,8 @@ This statement is reflected by our benchmark of RiboTIE against other existing t
         - [ ] fasta file (containing called ORFs sequences)
     - [x] Support pre-training models on custom sets of data
     - [x] Parallelization for use with NextFlow/Snakemake
+- [ ] Optimizations
+    - [ ] SAM/BAM parser that does not load file completely in memory
 - [x] Wrap it: 
     - [x] Single pip package
     - [x] Simplify README
