@@ -190,7 +190,7 @@ rule ribotie_parse_genomic_features:
 # For HPC servers, it can further be advantageous to create an extra rule for parsing the riboseq
 # data separately using a partition that does not require GPU resources
 # e.g. `ribotie {input.config} --data --samples {wildcards.sample} --parallel`
-rule ribotie_parse_riboseq_samples:
+rule ribotie_parse_and_predict_riboseq_samples:
     input:
         config="template.yml",
         base="GRCh38v110_snippet.h5",
