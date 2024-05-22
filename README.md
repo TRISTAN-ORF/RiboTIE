@@ -154,6 +154,13 @@ ribotie template.yml out_test/pretrain.yml
 
 Note that RiboTIE supports using multiple separate configuration files (the order is not important). By default, RiboTIE will determine the directory path of the configuration file listing the pre-trained model to search for the model dictionary (`.ckpt`). Both files can be moved together to a new directory if desired. 
 
+It is furthermore possible to determine the allocations for the training, validation and test sets manually.
+
+```bash
+ribotie template.yml test/folds.yml --pretrain
+```
+
+
 ### ⚡️ Parallelization
 
 The use of a single `hdf5` database has limitations towards upscaling and parallelization of RiboTIE. While samples are processed independently, having multiple processes write and read to and from a single `hdf5` can result in I/O errors.
