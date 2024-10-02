@@ -229,7 +229,7 @@ RiboTIE is trained and fine-tuned using a set of canonical coding sequences. Thi
 After fine-tuning, the model provides predictions for each  position of each transcript. 
 No additional post-processing steps are performed.
 From these predicted translation initiation sites, the resulting translated ORFs are obtained by searching for the first in-frame stop codon.
-No filtering is applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
+Filtering can be applied based on the characteristics of the translated ORFs (e.g. start codon, minimum length).
 
 This technique was shown to substantially outperform previous methods. We hypothesize this gain to be achieved through various factors:
 - fine-tuning on each data set, the model learns custom rules present for each data set
