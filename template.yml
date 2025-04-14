@@ -36,11 +36,14 @@ samples:
   - sample_1
   - sample_3
 #
-## example: sample_1 and sample_2 are merged (replicates)
-#samples:
-#  - - sample_1
-#    - sample_2
-#
+# example: sample_1 and sample_2 are merged (replicates)
+# samples:
+#    group 1:
+#      - sample_1
+#      - sample_2
+#    group_2:
+#      - sample_3
+# 
 ########################################################
 ## Training times can be sped up by removing transcripts
 ## with few reads from the training step. 
@@ -50,9 +53,10 @@ samples:
 ########################################################
 ## example: ommit transcripts with less than 6 reads during 
 ## training/validation
-cond :
-  ribo:
-    num_reads : x > 6
+## this is default and always applied if not altered!
+# cond :
+#   ribo:
+#     num_reads : x > 0
 #
 ## example: custom rules per data set
 #cond :

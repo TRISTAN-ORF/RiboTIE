@@ -19,7 +19,7 @@ The data, model parameters, and benchmark data from **the article** are featured
 
 When interested in more advanced features, such as using a custom transformer architecture, we refer the user manual of the [transcript-transformer package](https://github.com/TRISTAN-ORF/transcript_transformer),  created in support of RiboTIE. 
 
-Make sure to check out [TIS Transformer](https://github.com/TRISTAN-ORF/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data.
+Make sure to check out [TIS Transformer](https://github.com/TRISTAN-ORF/TIS_transformer) as well, a similar tool for the delineation of novel coding sequences using transcript sequence data rather than ribosome profiling data. TIS Transformer predicts novel CDSs based on transcript sequence data rather than ribosome profiling data, and can be used in conjuction with RiboTIE.
 
 
 
@@ -72,10 +72,11 @@ subsequently, for every data set in `ribo_paths`:
 2. Fine-tune pre-trained models on non-overlapping folds of the data.
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
+5. Filter out [CDS variant calls](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier)
 
-RiboTIE finetunes a pre-trained model on individual samples as this improves performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. See "Pre-training models" for instructions on how to pre-train a custom model. e.g., to apply RiboTIE on other species. 
+RiboTIE finetunes a pre-trained model on individual samples as this improves performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. Alternatively, [models can be pre-trained on custom data](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#pre-training-models), e.g., to apply RiboTIE on other species. 
 
-To run RiboTIE on some test data, clone this repository and run:
+To run RiboTIE on some test data, install `transcript_transformer`, clone this repository and run:
 ```bash
 ribotie template.yml
 ```
@@ -86,26 +87,18 @@ ribotie -h
 ```
 
 ### Parsing data
-Parsing the data within the `hdf5` database can be achieved without doing fine-tuning and prediction by running:
+Parsing the data within the `hdf5` database can be achieved without doing fine-tuning and prediction. This can be specifically of interest when running RiboTIE on cloud infrastructure.
 
 ```bash
 ribotie template.yml --data
 ```
 
-Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `ribotie template.yml`), as the data is detected within the `hdf5` database.
+Once completed, the tool will automatically skip to the fine-tuning and prediction steps when re-running the script (i.e., `ribotie template.yml`) as the data is detected within the `hdf5` database.
 
 ### Parsing the predictions 
 
 RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). It is not feasible or of interest to provide information on the millions of predictions available.
-Therefore, RiboTIE only collects metadata for predictions meeting the listed criteria. For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
-
-By default, included predictions are filtered on:
-
-- the model output (`output`) is larger than 0.15
-- start codons (`start_codon`) are near-cognate (*TG)
-- a valid translation termination site (`TTS_on_transcript`) is present on transcript
-
-Additionally, sites with near-miss predictions are corrected ([explanation](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier)).
+Therefore, RiboTIE only collects metadata for predictions meeting the [listed criteria](filtering). For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
 
 **NOTE: the output `.csv`/`.gff` files are generated from the full set of predictions on the transcriptome (within the `.npy` files). The RiboTIE model should not be fine-tuned again when creating new result tables (Use the `--results` flag!)** 
 
@@ -116,6 +109,7 @@ For example: get more metadata on the ORFs where all start codons are included:
 ```bash
 ribotie yaml_file.yml --results --start_codons ".*"
 ```
+
 
 ### Evaluating results
 
@@ -213,6 +207,34 @@ rule ribotie_parse_and_predict_riboseq_samples:
 
 > Note that if a variable is defined both within yaml configuration file and a bash argument (e.g. `--samples`), the latter (i.e., bash arguments) will overwrite the former.  
 
+### Filtering
+
+#### Custom filters
+
+Custom filtered can be toggled or altered by the user. By default, included predictions are filtered on:
+
+- `--prob_cutoff`: the model prediction score (`ribotie_score`) is larger than 0.125
+- `--start_codons`: start codons (`start_codon`) are near-cognate (*TG)
+- `--include_invalid_TTS`: a valid translation termination site (`TTS_on_transcript`) is present on the transcript.
+
+#### Variant CDS filtering
+
+<div align="center">
+<img src="https://github.com/TRISTAN-ORF/RiboTIE/raw/main/filtering.png" width="800">
+</div>
+
+
+#### Near-miss identifier
+
+RiboTIE, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
+
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
+
+
+Additionally, [variant CDS filtering is performed]() and [sites with near-miss predictions are corrected](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier). Results excluding variant CDS filtering are generated as `*.unfiltered.gtf` and `*.unfiltered.csv`. Both the custom filters and near-miss correction can be toggled through the command line tool.jjj
+
+
+
 ## 🤨 How does RiboTIE work?
 
 See [the manuscript](https://www.biorxiv.org/content/10.1101/2023.06.20.545724v1) for a detailed description.
@@ -237,13 +259,8 @@ This technique was shown to substantially outperform previous methods. We hypoth
 - elegant approach with very few custom hardcoded rules for data (pre-)processing or selection.
 - use of a state-of-the-art machine learning tools (transformer networks), which are perfectly suited for the data type (a variable number of input vectors). 
 
+
 ## (optional) Post-processing steps that correct RiboTIE predictions
-
-### Near-miss identifier
-
-RiboTIE, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
-
-It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
 
 ## ⁉️ FAQ
 
