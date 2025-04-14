@@ -266,8 +266,20 @@ RiboTIE has been trained only on ribosome sequencing data to prevent the model f
 As such, RiboTIE would only be biased against detecting TISs of shorter ORFs if the distribution of ribosome protected fragments is distinctly different from that of canonincal coding sequences, for which there exists no proof today. 
 This statement is reflected by our benchmark of RiboTIE against other existing tools, where the discovery rate of short canonical CDSs (<300nt) by RiboTIE was at least 400% higher than any other tool [main manuscript; Fig 1C](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1). 
 
+## 🖊️ Citation  
 
-
+```bibtex
+@article{clauwaert2025deep,
+  title={Deep learning to decode sites of RNA translation in normal and cancerous tissues},
+  author={Clauwaert, Jim and McVey, Zahra and Gupta, Ramneek and Yannuzzi, Ian and Basrur, Venkatesha and Nesvizhskii, Alexey I and Menschaert, Gerben and Prensner, John R},
+  journal={Nature Communications},
+  volume={16},
+  number={1},
+  pages={1275},
+  year={2025},
+  publisher={Nature Publishing Group UK London}
+}
+```
 
 ## ✔️ Roadmap
 
