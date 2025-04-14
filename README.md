@@ -72,7 +72,7 @@ subsequently, for every data set in `ribo_paths`:
 2. Fine-tune pre-trained models on non-overlapping folds of the data.
 3. Get model predictions for all positions of the transcriptome
 4. Collect metadata for the top ranking predictions
-5. Filter out [CDS variant calls](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier)
+5. Filter out [CDS variant calls](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#variant-cds-filtering)
 
 RiboTIE finetunes a pre-trained model on individual samples as this improves performances while drastically reducing computational resources required during the fine-tuning step as compared to training models from scratch. By default, RiboTIE incorporates a pre-trained model for human data. Alternatively, [models can be pre-trained on custom data](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#pre-training-models), e.g., to apply RiboTIE on other species. 
 
@@ -98,7 +98,7 @@ Once completed, the tool will automatically skip to the fine-tuning and predicti
 ### Parsing the predictions 
 
 RiboTIE evaluates and returns all positions on the transcriptome (saved in `*.npy` files). It is not feasible or of interest to provide information on the millions of predictions available.
-Therefore, RiboTIE only collects metadata for predictions meeting the [listed criteria](filtering). For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
+Therefore, RiboTIE only collects metadata for predictions meeting the [listed criteria](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#filtering). For these, the tool will generate a result table (`*.csv`) and a minimally formatted `.gtf` file that can be combined with tools such as `gffread` to extract sequences. 
 
 **NOTE: the output `.csv`/`.gff` files are generated from the full set of predictions on the transcriptome (within the `.npy` files). The RiboTIE model should not be fine-tuned again when creating new result tables (Use the `--results` flag!)** 
 
@@ -223,17 +223,13 @@ Custom filtered can be toggled or altered by the user. By default, included pred
 <img src="https://github.com/TRISTAN-ORF/RiboTIE/raw/main/filtering.png" width="800">
 </div>
 
+Results excluding variant CDS filtering are generated as `*.unfiltered.gtf` and `*.unfiltered.csv`. Both the custom filters and near-miss correction can be toggled through the command line tool.
 
 #### Near-miss identifier
 
 RiboTIE, unlike previous tools processing ribosome profiling data, does not create ORF libraries or has access to start codon information when making predictions. Essentially, it only parses ribosome profiling information along the transcript.
 
-It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled by adding the `--no-correction` flag. 
-
-
-Additionally, [variant CDS filtering is performed]() and [sites with near-miss predictions are corrected](https://github.com/TRISTAN-ORF/RiboTIE/blob/main/README.md#near-miss-identifier). Results excluding variant CDS filtering are generated as `*.unfiltered.gtf` and `*.unfiltered.csv`. Both the custom filters and near-miss correction can be toggled through the command line tool.jjj
-
-
+It is observed that, for transcripts featuring fewer mapped reads around the translation initiation site, RiboTIE is more prone to miss translation initiation sites by several bases. To address this issue, a neighborhood searching step is performed when creating the result table that corrects **non-ATG** predictions to **in-frame ATG positions**  if **present within a 9 codons distance**. Performed corrections are listed as `correction` in the result table. This feature can be disabled using the `--no-correction` flag. 
 
 ## 🤨 How does RiboTIE work?
 
