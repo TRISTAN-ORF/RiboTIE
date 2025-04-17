@@ -9,17 +9,17 @@ fa_path : test/GRCh38v110_snippet.fa
 ## DO NOT change id after data is parsed to h5 file
 ########################################################
 ribo_paths :
-  sample_1 : test/SRR000001.sam
-  sample_2 : test/SRR000002.sam
-  sample_3 : test/SRR000003.sam
+  sample_1 : test/data/SRR000001.sam
+  sample_2 : test/data/SRR000002.sam
+  sample_3 : test/data/SRR000003.sam
 ########################################################
 ## path to hdf5 database created to store data.
 ########################################################
-h5_path : GRCh38v110_snippet.h5
+h5_path : test/GRCh38v110_snippet.h5
 ########################################################
 ## Out prefix for predictions, defaults to hdf5 path
 ########################################################
-out_prefix : test_out/
+out_prefix : test/out/
 #
 ####################
 ## ADVANCED SETUP ##
