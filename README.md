@@ -13,7 +13,7 @@
 
 
 > [!CAUTION]
-> RiboTIE and TIS transformer are two tools that evolved from a central package `transcript-transformer`, but were handled in different repositories due to various reasons. With the release of v1.0.0, both tools are now again included and documented a single toolset called TRISTAN. For an up-to-date documentation and the most recent updates, or for submitting issues, make sure to refer to [the TRISTAN repository](https://github.com/TRISTAN-ORF/TRISTAN)!
+> RiboTIE and TIS transformer are two tools that evolved from a central package `transcript-transformer`, but were handled in different repositories due to various reasons. With the release of v1.0.0, both tools are now again included and documented by a single toolset called TRISTAN. For an up-to-date documentation and the most recent updates, or for submitting issues, make sure to refer to [the TRISTAN repository](https://github.com/TRISTAN-ORF/TRISTAN)!
 
 
 ## 📋 About
