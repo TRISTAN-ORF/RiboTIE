@@ -11,6 +11,11 @@
 
 </div>
 
+
+> [!CAUTION]
+> RiboTIE and TIS transformer are two tools that evolved from a central package `transcript-transformer`, but were handled in different repositories due to various reasons. With the release of v1.0.0, both tools are now again included and documented a single toolset called TRISTAN. For an up-to-date documentation and the most recent updates, or for submitting issues, make sure to refer to [the TRISTAN repository](https://github.com/TRISTAN-ORF/TRISTAN)!
+
+
 ## 📋 About
 
 [RiboTIE](http://biorxiv.org/cgi/content/full/2024.03.21.586110v1) is created to find translated ORFs on transcripts using ribosome profiling data. RiboTIE achieves state-of-the-art results independent of the lab protocol (e.g., translation blockers) applied to create the ribosome profiling database. This repository contains the instructions to run RiboTIE on custom data.
